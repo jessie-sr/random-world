@@ -66,7 +66,16 @@ public class LinkedListDequeTest {
          lld1.addFirst(-1); // [-1, 0, 1]
          lld1.addLast(2);   // [-1, 0, 1, 2]
          lld1.addFirst(-2); // [-2, -1, 0, 1, 2]
+         assertThat(lld1.toList()).containsExactly(-2, -1, 0, 1, 2).inOrder();
 
+         lld1.removeFirst(); // [-1, 0, 1, 2]
+         assertThat(lld1.toList()).containsExactly(-1, 0, 1, 2).inOrder();
+
+         lld1.removeLast(); // [-1, 0, 1]
+         assertThat(lld1.toList()).containsExactly(-1, 0, 1).inOrder();
+
+         lld1.addLast(2);   // [-1, 0, 1, 2]
+         lld1.addFirst(-2); // [-2, -1, 0, 1, 2]
          assertThat(lld1.toList()).containsExactly(-2, -1, 0, 1, 2).inOrder();
      }
 
@@ -130,7 +139,15 @@ public class LinkedListDequeTest {
         assertWithMessage(" nothing should be removed and returned").that(lld1.removeFirst()).isEqualTo(null);
 
         lld1.addLast(0);   // [0]
+        assertWithMessage("0 should be removed and returned").that(lld1.removeFirst()).isEqualTo(0);
+        assertThat(lld1.toList()).containsExactly().inOrder();
+
+        lld1.addLast(0);   // [0]
         lld1.addLast(1);   // [0, 1]
+        assertWithMessage("0 should be removed and returned").that(lld1.removeFirst()).isEqualTo(0);
+        assertThat(lld1.size()).isEqualTo(1);
+
+        lld1.addFirst(0);  // [0, 1]
         lld1.addFirst(-1); // [-1, 0, 1]
         lld1.addLast(2);   // [-1, 0, 1, 2]
         lld1.addFirst(-2); // [-2, -1, 0, 1, 2]
@@ -147,6 +164,14 @@ public class LinkedListDequeTest {
         assertWithMessage(" nothing should be removed and returned").that(lld1.removeLast()).isEqualTo(null);
 
         lld1.addLast(0);   // [0]
+        assertWithMessage("0 should be removed and returned").that(lld1.removeLast()).isEqualTo(0);
+        assertWithMessage(" nothing should be removed and returned").that(lld1.removeLast()).isEqualTo(null);
+
+        lld1.addLast(0);   // [0]
+        lld1.addLast(1);   // [0, 1]
+        assertWithMessage("1 should be removed and returned").that(lld1.removeLast()).isEqualTo(1);
+        assertThat(lld1.size()).isEqualTo(1);
+
         lld1.addLast(1);   // [0, 1]
         lld1.addFirst(-1); // [-1, 0, 1]
         lld1.addLast(2);   // [-1, 0, 1, 2]
