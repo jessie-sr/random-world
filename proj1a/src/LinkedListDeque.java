@@ -5,9 +5,9 @@ public class LinkedListDeque<T> implements Deque<T> {
 
     private class Node {
 
-        public T item;
-        public Node next;
-        public Node prev;
+        T item;
+        Node next;
+        Node prev;
 
         public Node(T item, Node next) {
             this.item = item;
@@ -40,10 +40,11 @@ public class LinkedListDeque<T> implements Deque<T> {
      */
     @Override
     public void addFirst(T x) {
-        Node newNode = new Node(x, sentinel.next, sentinel); // New node points to the original first node and the sentinel
+        Node newNode = new Node(x, sentinel.next, sentinel);
+        // New node points to the original first node and the sentinel
         sentinel.next.prev = newNode; // Update the previous reference of the original first node
         sentinel.next = newNode; // Update the next reference of the sentinel to the new node
-        size ++;
+        size++;
     }
 
     /**
@@ -53,10 +54,11 @@ public class LinkedListDeque<T> implements Deque<T> {
      */
     @Override
     public void addLast(T x) {
-        Node newNode = new Node(x, sentinel, sentinel.prev); // New node points to the original last node and the sentinel
+        Node newNode = new Node(x, sentinel, sentinel.prev);
+        // New node points to the original last node and the sentinel
         sentinel.prev.next = newNode; // Update the next reference of the original last node
         sentinel.prev = newNode; // Update the previous reference of the sentinel to the new node
-        size ++;
+        size++;
     }
 
     /**
@@ -108,7 +110,7 @@ public class LinkedListDeque<T> implements Deque<T> {
             T result = sentinel.next.item; // Store the item value of the original first node
             sentinel.next.next.prev = sentinel; // Update the previous reference of the original second node
             sentinel.next = sentinel.next.next; // Update the next reference of the sentinel
-            size --;
+            size--;
             return result;
         }
     }
@@ -126,7 +128,7 @@ public class LinkedListDeque<T> implements Deque<T> {
             T result = sentinel.prev.item; // Store the item value of the original last node
             sentinel.prev.prev.next = sentinel; // Update the next reference of the original second last node
             sentinel.prev = sentinel.prev.prev; // Update the prev reference of the sentinel
-            size --;
+            size--;
             return result;
         }
     }
@@ -145,7 +147,7 @@ public class LinkedListDeque<T> implements Deque<T> {
         } else {
             while (index > 0) {
                 pointer = pointer.next;
-                index --;
+                index--;
             }
             return pointer.item;
         }
@@ -160,17 +162,17 @@ public class LinkedListDeque<T> implements Deque<T> {
     @Override
     public T getRecursive(int index) {
         Node pointer = sentinel.next;
-        return RecursiveHelper(index, pointer);
+        return recursiveHelper(index, pointer);
     }
 
-    private T RecursiveHelper(int index, Node pointer) {
+    private T recursiveHelper(int index, Node pointer) {
         if ((index < 0) || (index > size - 1)) {
             return null;
         } else if (index == 0) {
             return pointer.item;
         } else {
             pointer = pointer.next;
-            return this.RecursiveHelper(index - 1, pointer);
+            return this.recursiveHelper(index - 1, pointer);
         }
     }
 }
