@@ -1,32 +1,12 @@
 package deque;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Iterator;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 
 public class LinkedListDeque<T> implements Deque<T> {
-    private class Node {
-
-        T item;
-        Node next;
-        Node prev;
-
-        public Node(T item, Node next) {
-            this.item = item;
-            this.next = next;
-            this.prev = null;
-        }
-
-
-        public Node(T item, Node next, Node prev) {
-            this.item = item;
-            this.next = next;
-            this.prev = prev;
-        }
-    }
-
     private Node sentinel;
     private int size;
 
@@ -184,18 +164,22 @@ public class LinkedListDeque<T> implements Deque<T> {
     public boolean equals(Object obj) {
         if (this == obj) {
             return true;
-        } else if (obj instanceof LinkedListDeque<?>) {
-            if (size != ((LinkedListDeque<?>) obj).size()) {
+        } else if (obj instanceof Deque<?> deque) {
+            return this.toList().equals(deque.toList());
+
+            /*if (size != ((LinkedListDeque<?>) obj).size()) {
                 return false;
             } else {
                 for (int i = 0; i < size; i++) {
+                    //Notice the return line!!
                     if (!this.get(i).equals(((LinkedListDeque<?>) obj).get(i))) {
                         return false;
                     }
-                    return true;
                 }
-            }
-        } return false;
+                return true;
+            }*/
+        }
+        return false;
     }
 
     @Override
@@ -206,6 +190,26 @@ public class LinkedListDeque<T> implements Deque<T> {
     @Override
     public Iterator<T> iterator() {
         return new LLDIterator();
+    }
+
+    private class Node {
+
+        T item;
+        Node next;
+        Node prev;
+
+        public Node(T item, Node next) {
+            this.item = item;
+            this.next = next;
+            this.prev = null;
+        }
+
+
+        public Node(T item, Node next, Node prev) {
+            this.item = item;
+            this.next = next;
+            this.prev = prev;
+        }
     }
 
     private class LLDIterator implements Iterator<T> {
