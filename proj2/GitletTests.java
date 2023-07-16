@@ -54,7 +54,7 @@ public class GitletTests {
     static final Path NOTA = SRC.resolve("nota.txt");
     static final Path NOTB = SRC.resolve("notb.txt");
     static final Path NOTF = SRC.resolve("notf.txt");
-    static final String DATE = "Date: \\w\\w\\w \\w\\w\\w \\d+ \\d\\d:\\d\\d:\\d\\d \\d\\d\\d\\d [-+]\\d\\d\\d\\d";
+    static final String DATE = "Date: \\d{2}:\\d{2}:\\d{2} UTC, [^,]+, \\d{1,2} [^ ]+ \\d{4}";
     static final String COMMIT_HEAD = "commit ([a-f0-9]+)[ \\t]*\\n(?:Merge:\\s+[0-9a-f]{7}\\s+[0-9a-f]{7}[ ]*\\n)?" + DATE;
     static final String COMMIT_LOG = "(===[ ]*\\ncommit [a-f0-9]+[ ]*\\n(?:Merge:\\s+[0-9a-f]{7}\\s+[0-9a-f]{7}[ ]*\\n)?${DATE}[ ]*\\n(?:.|\\n)*?(?=\\Z|\\n===))"
             .replace("${DATE}", DATE);
@@ -541,7 +541,7 @@ public class GitletTests {
                 initial commit
                                 
                 """
-                .replace("${HEADER}", "commit [a-f0-9]+")
+                .replace("${HEADER}", "commit ([a-fA-F0-9]{40})")
                 .replace("${DATE}", DATE));
     }
 
@@ -572,7 +572,7 @@ public class GitletTests {
                 initial commit
                                 
                 """
-                .replace("${HEADER}", "commit ([a-f0-9]+)")
+                .replace("${HEADER}", "commit ([a-fA-F0-9]{40})")
                 .replace("${DATE}", DATE));
         String uid2 = logMatch.group(1);
         String uid1 = logMatch.group(2);
@@ -685,7 +685,7 @@ public class GitletTests {
     public void test18_nopAdd() {
         i_setup2();
         gitletCommand(new String[]{"add", "f.txt"}, "");
-        //i_blankStatus();
+        i_blankStatus();
     }
 
     @Test

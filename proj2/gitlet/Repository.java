@@ -25,5 +25,7 @@ public class Repository {
     /** The .gitlet directory. */
     public static final File GITLET_DIR = join(CWD, ".gitlet");
 
+    public static final File STAGING_AREA = join(GITLET_DIR, ".stagingArea.ser");
+
     /* TODO: fill in the rest of this class. */
 }

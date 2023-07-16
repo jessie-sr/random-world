@@ -5,6 +5,7 @@ package gitlet;
 import java.io.Serializable;
 import java.util.Date; // TODO: You'll likely use this in this class
 import java.text.SimpleDateFormat;
+import java.util.HashMap;
 import java.util.Map;
 
 /** Represents a gitlet commit object.
@@ -43,7 +44,8 @@ public class Commit implements Serializable {
         this.message = message;
         this.parent = parent;
         this.author = System.getProperty("user.name");
-        this.id = Utils.sha1("hello");
+        this.Blobs = new HashMap<>();
+        this.id = Setid();
         if (!Main.isInitialized()) {
             this.timeStamp = "00:00:00 UTC, Thursday, 1 January 1970";
         } else {
@@ -61,11 +63,20 @@ public class Commit implements Serializable {
         return formattedDate;
     }
 
+    private String Setid() {
+        double vals = Math.random();
+        return Utils.sha1(Double.toString(vals));
+    }
+
     public CommitTree getTree() {
-        return this.currTree;
+        return currTree;
     }
     public void setTree(CommitTree currTree) {
         this.currTree = currTree;
+    }
+
+    public Map<String, Blob> getBlobs() {
+        return Blobs;
     }
 
     public Blob getBlob(String fileName) {
@@ -76,4 +87,27 @@ public class Commit implements Serializable {
         Blobs.put(fileName, copyFile);
     }
 
+    public String getMessage() {
+        return message;
+    }
+
+    public String getTimestamp() {
+        return timeStamp.toString();
+    }
+
+    public String getId(){
+        return id;
+    }
+
+    public Commit getParent() {
+        return parent;
+    }
+
+    public boolean hasFile(String fileName) {
+        if (Blobs.containsKey(fileName)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }

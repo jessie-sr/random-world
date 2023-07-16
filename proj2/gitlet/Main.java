@@ -1,9 +1,7 @@
 package gitlet;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.util.Map;
 
 /** Driver class for Gitlet, a subset of the Git version-control system.
  *  @author TODO
@@ -26,6 +24,19 @@ public class Main {
                 add(args[1]);
                 break;
             // TODO: FILL THE REST IN
+            case "commit":
+                commit(args[1]);
+                break;
+            case "restore":
+                if (args.length == 3) {
+                    restore(null, args[2]);
+                } else {
+                    restore(args[2], args[3]);
+                }
+                break;
+            case "log":
+                log();
+                break;
         }
     }
 
@@ -43,6 +54,9 @@ public class Main {
         Commit initCommit = new Commit("initial commit", null);
         CommitTree treeSystem = new CommitTree(initCommit);
         Utils.writeObject(new File(gitletDir, "commitTree"), treeSystem);
+        treeSystem.save();
+        StagingArea stagingArea = new StagingArea();
+        stagingArea.save();
     }
 
     public static void add(String fileName) {
@@ -54,9 +68,8 @@ public class Main {
             if (stagingArea.contains(fileName)) {
                 stagingArea.remove(fileName);
             }
-            File treeDir = new File(".gitlet/commitTree");
-            CommitTree currTree = Utils.readObject(treeDir, CommitTree.class);
-            Commit currCommit = currTree.getMain();
+            CommitTree commitTree = CommitTree.load();
+            Commit currCommit = commitTree.getMain();
             Blob currentBlob = currCommit.getBlob(fileName);
             byte[] fileBytes = Utils.readContents(targetFile);
             if (currentBlob != null && currentBlob.isEqualContent(fileBytes)) {
@@ -70,10 +83,81 @@ public class Main {
         }
     }
 
-    private Commit getCurrCommit() {
-        File treeDir = new File(".gitlet/commitTree");
-        CommitTree currTree = Utils.readObject(treeDir, CommitTree.class);
-        Commit currCommit = currTree.getMain();
-        return currCommit;
+    public static void commit(String message) {
+        StagingArea stagingArea = StagingArea.load();
+        if (stagingArea.getStagedFiles().isEmpty()) {
+            System.out.println("No changes added to the commit.");
+            return;
+        }
+        if (message.isBlank()) {
+            System.out.println("Please enter a commit message.");
+            return;
+        }
+        CommitTree commitTree = CommitTree.load();
+        Commit parentCommit = commitTree.getMain();
+        Map<String, Blob> stagedFiles = stagingArea.getStagedFiles();
+        for (Map.Entry<String, Blob> entry : stagedFiles.entrySet()) {
+            String fileName = entry.getKey();
+            Blob blob = entry.getValue();
+            parentCommit.getBlobs().put(fileName, blob);
+        }
+        Commit newCommit = new Commit(message, parentCommit);
+        newCommit.getBlobs().putAll(parentCommit.getBlobs());
+        stagingArea.clear();
+        stagingArea.save();
+        commitTree.setMain(newCommit);
+        commitTree.save();
+    }
+
+    public static void restore(String commitId, String fileName) {
+        CommitTree commitTree = CommitTree.load();
+        Commit parentCommit = commitTree.getMain();
+        if (commitId == null) {
+            if (!parentCommit.hasFile(fileName)) {
+                System.out.println("File does not exist in that commit.");
+                return;
+            }
+        } else {
+            if (!commitTree.hasCommit(commitId)) {
+                System.out.println("No commit with the given id exists.");
+                return;
+            } else {
+                Commit pointer = commitTree.getMain();
+                while (pointer != null) {
+                    if (pointer.getId().equals(commitId)) {
+                        parentCommit = pointer;
+                    }
+                    pointer = pointer.getParent();
+                }
+
+            }
+        }
+        Blob fileBlob = parentCommit.getBlobs().get(fileName);
+        byte[] fileContent = fileBlob.getContent();
+        File restoredFile = new File(Repository.CWD, fileName);
+        Utils.writeContents(restoredFile, fileContent);
+    }
+
+    public static void log() {
+        CommitTree commitTree = CommitTree.load();
+        Commit commit = commitTree.getMain();
+
+        while (commit != null) {
+            System.out.println("===");
+            System.out.println("commit " + commit.getId());
+
+            // Print merge commit information if applicable
+//            if (commit.getParents().size() > 1) {
+//                System.out.print("Merge: ");
+//                System.out.print(commit.getParents().get(0).getId().substring(0, 7) + " ");
+//                System.out.println(commit.getParents().get(1).getId().substring(0, 7));
+//            }
+
+            System.out.println("Date: " + commit.getTimestamp());
+            System.out.println(commit.getMessage());
+            System.out.println();
+
+            commit = commit.getParent();
+        }
     }
 }

@@ -24,20 +24,20 @@ public class StagingArea implements Serializable {
     }
 
     public static StagingArea load() {
-        try (FileInputStream fileIn = new FileInputStream(".gitlet/stagingArea.ser");
-             ObjectInputStream objIn = new ObjectInputStream(fileIn)) {
-            return (StagingArea) objIn.readObject();
-        } catch (IOException | ClassNotFoundException e) {
-            return new StagingArea();
-        }
+        File fileIn = new File(".gitlet/stagingArea.ser");
+        return Utils.readObject(fileIn, StagingArea.class);
     }
 
     public void save() {
-        try (FileOutputStream fileOut = new FileOutputStream(".gitlet/stagingArea.ser");
-             ObjectOutputStream objOut = new ObjectOutputStream(fileOut)) {
-            objOut.writeObject(this);
-        } catch (IOException e) {
-            System.err.println("Failed to save staging area: " + e.getMessage());
-        }
+        File fileOut = new File(".gitlet/stagingArea.ser");
+        Utils.writeObject(fileOut, this);
+    }
+
+    public void clear() {
+        stagedFiles = new HashMap<>();
+    }
+
+    public Map<String, Blob> getStagedFiles() {
+        return stagedFiles;
     }
 }
