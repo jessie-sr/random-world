@@ -58,7 +58,7 @@ public class Commit implements Serializable {
 
     private String Time() {
         Date date = new Date();
-        SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss 'UTC, 'EEEE, d MMMM yyyy");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss yyyy Z");
         String formattedDate = dateFormat.format(date);
         return formattedDate;
     }
