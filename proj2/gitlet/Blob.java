@@ -1,5 +1,6 @@
 package gitlet;
 
+import java.io.File;
 import java.io.Serializable;
 import java.util.Arrays;
 
@@ -11,6 +12,7 @@ public class Blob implements Serializable {
     public Blob(byte[] content) {
         this.content = content;
         this.id = Utils.sha1(content);
+        this.save();
     }
 
     public byte[] getContent() {
@@ -23,5 +25,10 @@ public class Blob implements Serializable {
 
     public String getId() {
         return this.id;
+    }
+
+    public void save() {
+        File fileOut = new File(".gitlet/blob.ser");
+        Utils.writeObject(fileOut, this);
     }
 }

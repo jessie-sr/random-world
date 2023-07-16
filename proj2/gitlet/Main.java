@@ -31,7 +31,7 @@ public class Main {
                 if (args.length == 3) {
                     restore(null, args[2]);
                 } else {
-                    restore(args[2], args[3]);
+                    restore(args[1], args[3]);
                 }
                 break;
             case "log":
@@ -126,6 +126,7 @@ public class Main {
                 while (pointer != null) {
                     if (pointer.getId().equals(commitId)) {
                         parentCommit = pointer;
+                        break;
                     }
                     pointer = pointer.getParent();
                 }
