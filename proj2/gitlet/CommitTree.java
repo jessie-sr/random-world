@@ -30,14 +30,14 @@ public class CommitTree implements Serializable {
         Utils.writeObject(fileOut, this);
     }
 
-    public boolean hasCommit(String commitId) {
+    public Commit findCommit(String commitId) {
         Commit pointer = this.main;
         while (pointer != null) {
             if (pointer.getId().equals(commitId)) {
-                return true;
+                return pointer;
             }
             pointer = pointer.getParent();
         }
-        return false;
+        return null;
     }
 }

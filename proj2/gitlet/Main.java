@@ -96,13 +96,13 @@ public class Main {
         CommitTree commitTree = CommitTree.load();
         Commit parentCommit = commitTree.getMain();
         Map<String, Blob> stagedFiles = stagingArea.getStagedFiles();
+        Commit newCommit = new Commit(message, parentCommit);
+        newCommit.getBlobs().putAll(parentCommit.getBlobs());
         for (Map.Entry<String, Blob> entry : stagedFiles.entrySet()) {
             String fileName = entry.getKey();
             Blob blob = entry.getValue();
-            parentCommit.getBlobs().put(fileName, blob);
+            newCommit.getBlobs().put(fileName, blob);
         }
-        Commit newCommit = new Commit(message, parentCommit);
-        newCommit.getBlobs().putAll(parentCommit.getBlobs());
         stagingArea.clear();
         stagingArea.save();
         commitTree.setMain(newCommit);
@@ -111,29 +111,24 @@ public class Main {
 
     public static void restore(String commitId, String fileName) {
         CommitTree commitTree = CommitTree.load();
-        Commit parentCommit = commitTree.getMain();
+        Commit parentCommit;
+
         if (commitId == null) {
-            if (!parentCommit.hasFile(fileName)) {
-                System.out.println("File does not exist in that commit.");
-                return;
-            }
+            parentCommit = commitTree.getMain();
         } else {
-            if (!commitTree.hasCommit(commitId)) {
+            parentCommit = commitTree.findCommit(commitId);
+            if (parentCommit == null) {
                 System.out.println("No commit with the given id exists.");
                 return;
-            } else {
-                Commit pointer = commitTree.getMain();
-                while (pointer != null) {
-                    if (pointer.getId().equals(commitId)) {
-                        parentCommit = pointer;
-                        break;
-                    }
-                    pointer = pointer.getParent();
-                }
-
             }
         }
-        Blob fileBlob = parentCommit.getBlobs().get(fileName);
+
+        Blob fileBlob = parentCommit.getBlob(fileName);
+        if (fileBlob == null) {
+            System.out.println("File does not exist in that commit.");
+            return;
+        }
+
         byte[] fileContent = fileBlob.getContent();
         File restoredFile = new File(Repository.CWD, fileName);
         Utils.writeContents(restoredFile, fileContent);
