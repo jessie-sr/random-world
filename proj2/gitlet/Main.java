@@ -13,8 +13,9 @@ public class Main {
      */
     public static void main(String[] args) {
         // TODO: what if args is empty?
-        if (args == null) {
+        if (args.length == 0) {
             System.out.println("Please enter a command.");
+            return;
         }
         String firstArg = args[0];
         switch(firstArg) {
@@ -24,47 +25,99 @@ public class Main {
                 break;
             case "add":
                 // TODO: handle the `add [filename]` command
+                if (!isInitialized()) {
+                    System.out.println("Not in an initialized Gitlet directory.");
+                    return;
+                }
                 add(args[1]);
                 break;
             // TODO: FILL THE REST IN
             case "commit":
+                if (!isInitialized()) {
+                    System.out.println("Not in an initialized Gitlet directory.");
+                    return;
+                }
                 commit(args[1]);
                 break;
             case "restore":
+                if (!isInitialized()) {
+                    System.out.println("Not in an initialized Gitlet directory.");
+                    return;
+                }
                 if (args.length == 3) {
                     restore(null, args[2]);
                 } else if (!args[2].equals("--")) {
                     System.out.println("Incorrect operands.");
+                    return;
                 } else {
                     restore(args[1], args[3]);
                 }
                 break;
             case "log":
+                if (!isInitialized()) {
+                    System.out.println("Not in an initialized Gitlet directory.");
+                    return;
+                }
                 log();
                 break;
             case "global-log":
+                if (!isInitialized()) {
+                    System.out.println("Not in an initialized Gitlet directory.");
+                    return;
+                }
                 globalLog();
                 break;
             case "status":
+                if (!isInitialized()) {
+                    System.out.println("Not in an initialized Gitlet directory.");
+                    return;
+                }
                 status();
                 break;
             case "rm":
+                if (!isInitialized()) {
+                    System.out.println("Not in an initialized Gitlet directory.");
+                    return;
+                }
                 rm(args[1]);
                 break;
             case "find":
+                if (!isInitialized()) {
+                    System.out.println("Not in an initialized Gitlet directory.");
+                    return;
+                }
                 find(args[1]);
                 break;
             case "branch":
+                if (!isInitialized()) {
+                    System.out.println("Not in an initialized Gitlet directory.");
+                    return;
+                }
                 branch(args[1]);
                 break;
             case "switch":
+                if (!isInitialized()) {
+                    System.out.println("Not in an initialized Gitlet directory.");
+                    return;
+                }
                 switchBranch(args[1]);
                 break;
             case "rm-branch":
+                if (!isInitialized()) {
+                    System.out.println("Not in an initialized Gitlet directory.");
+                    return;
+                }
                 rmBranch(args[1]);
                 break;
             case "reset":
+                if (!isInitialized()) {
+                    System.out.println("Not in an initialized Gitlet directory.");
+                    return;
+                }
                 reset(args[1]);
+                break;
+            default:
+                System.out.println("No command with that name exists.");
                 break;
         }
     }

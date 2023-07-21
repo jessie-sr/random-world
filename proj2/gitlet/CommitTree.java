@@ -60,6 +60,11 @@ public class CommitTree implements Serializable {
         if (commits.containsKey(commitId)) {
             return commits.get(commitId);
         }
+        for (String id: commits.keySet()) {
+            if (id.contains(commitId)) {
+                return findCommit(id);
+            }
+        }
         return null;
     }
 }
