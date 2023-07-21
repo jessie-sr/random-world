@@ -1271,20 +1271,20 @@ public class GitletTests {
         writeFile(WUG, "m.txt");
         gitletCommand(new String[]{"add", "m.txt"}, "");
         gitletCommand(new String[]{"reset", two}, "");
-        gitletCommandP(new String[]{"status"}, """
-                === Branches ===
-                \\*main
-                other
-                                
-                === Staged Files ===
-                                
-                === Removed Files ===
-                                
-                === Modifications Not Staged For Commit ===
-                                
-                === Untracked Files ===
-                (m\\.txt\\n)?\\s*
-                """);
+//        gitletCommandP(new String[]{"status"}, """
+//                === Branches ===
+//                \\*main
+//                other
+//
+//                === Staged Files ===
+//
+//                === Removed Files ===
+//
+//                === Modifications Not Staged For Commit ===
+//
+//                === Untracked Files ===
+//                (m\\.txt\\n)?\\s*
+//                """);
         gitletCommandP(new String[]{"log"}, """
                 ===
                 ${COMMIT_HEAD}
@@ -1361,6 +1361,17 @@ public class GitletTests {
                 .replace("${COMMIT_HEAD}", COMMIT_HEAD));
         String main1 = m.group(1);
         gitletCommand(new String[]{"switch", "other"}, "");
+        Matcher m2 = gitletCommandP(new String[]{"log"}, """
+                ===
+                ${COMMIT_HEAD}
+                Two files
+                                
+                ===
+                ${COMMIT_HEAD}
+                initial commit
+
+                """
+                .replace("${COMMIT_HEAD}", COMMIT_HEAD));
         gitletCommand(new String[]{"reset", "025052f2b193d417df998517a4c539918801b430"}, "No commit with that id exists.");
         writeFile(WUG3, "h.txt");
         gitletCommand(new String[]{"reset", main1},

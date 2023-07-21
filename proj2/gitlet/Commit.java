@@ -2,10 +2,12 @@ package gitlet;
 
 // TODO: any imports you need here
 
+import java.io.File;
 import java.io.Serializable;
 import java.util.Date; // TODO: You'll likely use this in this class
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 /** Represents a gitlet commit object.
@@ -34,17 +36,19 @@ public class Commit implements Serializable {
 
     private String id;
 
+    private String branchName;
+
     private Commit parent;
 
     private CommitTree currTree;
 
-    private Map<String, Blob> Blobs;
+    private HashMap<String, Blob> Blobs = new HashMap<>();
 
-    public Commit(String message, Commit parent) {
+    public Commit(String message, Commit parent, String branchName) {
         this.message = message;
         this.parent = parent;
+        this.branchName = branchName;
         this.author = System.getProperty("user.name");
-        this.Blobs = new HashMap<>();
         this.id = Setid();
         if (!Main.isInitialized()) {
             this.timeStamp = "00:00:00 UTC, Thursday, 1 January 1970";
@@ -53,12 +57,17 @@ public class Commit implements Serializable {
         }
         if (parent != null) {
             this.setTree(parent.getTree());
+        } else {
+            CommitTree tree = new CommitTree(this);
+            this.currTree = tree;
         }
+        this.save();
+        this.currTree.addCommit(this.id, this);
     }
 
     private String Time() {
         Date date = new Date();
-        SimpleDateFormat dateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss yyyy Z");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss yyyy Z", Locale.ENGLISH);
         String formattedDate = dateFormat.format(date);
         return formattedDate;
     }
@@ -79,12 +88,17 @@ public class Commit implements Serializable {
         return Blobs;
     }
 
+    public void setBlobs(HashMap<String, Blob> blobs) {
+        this.Blobs = blobs;
+    }
+
     public Blob getBlob(String fileName) {
         return Blobs.getOrDefault(fileName, null);
     }
 
     public void addBlob(String fileName, Blob copyFile) {
         Blobs.put(fileName, copyFile);
+        copyFile.setName(fileName);
     }
 
     public String getMessage() {
@@ -95,12 +109,20 @@ public class Commit implements Serializable {
         return timeStamp.toString();
     }
 
-    public String getId(){
+    public String getId() {
         return id;
     }
 
     public Commit getParent() {
         return parent;
+    }
+
+    public String getBranchName() {
+        return branchName;
+    }
+
+    public void setBranchName(String newBranchName) {
+        this.branchName = newBranchName;
     }
 
     public boolean hasFile(String fileName) {
@@ -109,5 +131,14 @@ public class Commit implements Serializable {
         } else {
             return false;
         }
+    }
+
+    public void save() {
+        File commitDir = new File(".gitlet/commit");
+        if (!commitDir.exists()) {
+            commitDir.mkdir();
+        }
+        File fileOut = new File(".gitlet/commit/" + this.getId());
+        Utils.writeObject(fileOut, this);
     }
 }

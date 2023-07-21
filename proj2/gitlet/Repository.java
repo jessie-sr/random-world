@@ -27,5 +27,7 @@ public class Repository {
 
     public static final File STAGING_AREA = join(GITLET_DIR, ".stagingArea.ser");
 
+    public static final File BLOB = join(GITLET_DIR, "blob.ser");
+
     /* TODO: fill in the rest of this class. */
 }

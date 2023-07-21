@@ -9,6 +9,10 @@ public class Blob implements Serializable {
 
     private String id;
 
+    private String fileName;
+
+    private File blobFile;
+
     public Blob(byte[] content) {
         this.content = content;
         this.id = Utils.sha1(content);
@@ -27,8 +31,20 @@ public class Blob implements Serializable {
         return this.id;
     }
 
+    public void setName(String fileName) {
+        this.fileName = fileName;
+    }
+
+    public String getFileName() {
+        return fileName;
+    }
+
     public void save() {
-        File fileOut = new File(".gitlet/blob.ser");
+        File commitDir = new File(".gitlet/blob");
+        if (!commitDir.exists()) {
+            commitDir.mkdir();
+        }
+        File fileOut = new File(".gitlet/blob/" + this.getId());
         Utils.writeObject(fileOut, this);
     }
 }

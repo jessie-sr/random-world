@@ -2,22 +2,48 @@ package gitlet;
 
 import java.io.Serializable;
 import java.io.File;
+import java.util.*;
 
 public class CommitTree implements Serializable {
+
+    private Map<String, Commit> branches;
+
+    private Map<String, Commit> commits;
 
     private Commit main;
 
     public CommitTree(Commit currCommit) {
+        this.branches = new TreeMap<>();
+        this.commits = new TreeMap<>();
         this.main = currCommit;
-        currCommit.setTree(this);
+        this.addBranch(currCommit.getBranchName(), currCommit);
+        this.commits.put(currCommit.getId(), currCommit);
+    }
+
+    public Map<String, Commit> getBranches() {
+        return branches;
+    }
+
+    public Map<String, Commit> getCommits() {
+        return commits;
+    }
+
+    public void addCommit(String commitId, Commit commit) {
+        this.commits.put(commitId, commit);
+    }
+
+    public void addBranch(String branchName, Commit newBranch) {
+        branches.put(branchName, newBranch);
     }
 
     public Commit getMain() {
         return main;
     }
 
-    public void setMain(Commit mainCommit) {
+    public void setMain(String branchName, Commit mainCommit) {
         this.main = mainCommit;
+        mainCommit.setBranchName(branchName);
+        branches.put(branchName, mainCommit);
     }
 
     public static CommitTree load() {
@@ -31,12 +57,8 @@ public class CommitTree implements Serializable {
     }
 
     public Commit findCommit(String commitId) {
-        Commit pointer = this.main;
-        while (pointer != null) {
-            if (pointer.getId().equals(commitId)) {
-                return pointer;
-            }
-            pointer = pointer.getParent();
+        if (commits.containsKey(commitId)) {
+            return commits.get(commitId);
         }
         return null;
     }
