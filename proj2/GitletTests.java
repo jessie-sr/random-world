@@ -1023,13 +1023,45 @@ public class GitletTests {
         writeFile(WUG2, "h.txt");
         gitletCommand(new String[]{"add", "h.txt"}, "");
         gitletCommand(new String[]{"rm", "g.txt"}, "");
+        gitletCommandP(new String[]{"status"}, """
+                === Branches ===
+                \\*main
+                other
+
+                === Staged Files ===
+                h.txt
+
+                === Removed Files ===
+                g.txt
+
+                === Modifications Not Staged For Commit ===
+
+                === Untracked Files ===
+
+                """);
         gitletCommand(new String[]{"commit", "Add h.txt and remove g.txt"}, "");
         gitletCommand(new String[]{"switch", "other"}, "");
         gitletCommand(new String[]{"rm", "f.txt"}, "");
+        gitletCommandP(new String[]{"status"}, """
+                === Branches ===
+                main
+                \\*other
+
+                === Staged Files ===
+
+                === Removed Files ===
+                f.txt
+
+                === Modifications Not Staged For Commit ===
+
+                === Untracked Files ===
+
+                """);
         writeFile(WUG3, "k.txt");
         gitletCommand(new String[]{"add", "k.txt"}, "");
         gitletCommand(new String[]{"commit", "Add k.txt and remove f.txt"}, "");
         gitletCommand(new String[]{"switch", "main"}, "");
+        assertFileEquals(WUG2, "h.txt");
         gitletCommand(new String[]{"merge", "other"}, "");
         assertFileDoesNotExist("f.txt");
         assertFileDoesNotExist("g.txt");
@@ -1271,20 +1303,20 @@ public class GitletTests {
         writeFile(WUG, "m.txt");
         gitletCommand(new String[]{"add", "m.txt"}, "");
         gitletCommand(new String[]{"reset", two}, "");
-//        gitletCommandP(new String[]{"status"}, """
-//                === Branches ===
-//                \\*main
-//                other
-//
-//                === Staged Files ===
-//
-//                === Removed Files ===
-//
-//                === Modifications Not Staged For Commit ===
-//
-//                === Untracked Files ===
-//                (m\\.txt\\n)?\\s*
-//                """);
+        gitletCommandP(new String[]{"status"}, """
+                === Branches ===
+                \\*main
+                other
+
+                === Staged Files ===
+
+                === Removed Files ===
+
+                === Modifications Not Staged For Commit ===
+
+                === Untracked Files ===
+                (m\\.txt\\n)?\\s*
+                """);
         gitletCommandP(new String[]{"log"}, """
                 ===
                 ${COMMIT_HEAD}
@@ -1425,6 +1457,22 @@ public class GitletTests {
         gitletCommand(new String[]{"commit", "Add h.txt"}, "");
         gitletCommand(new String[]{"branch", "b2"}, "");
         gitletCommand(new String[]{"rm", "f.txt"}, "");
+        gitletCommandP(new String[]{"status"}, """
+                === Branches ===
+                b1
+                b2
+                \\*main               
+
+                === Staged Files ===
+
+                === Removed Files ===
+                f.txt
+                
+                === Modifications Not Staged For Commit ===
+
+                === Untracked Files ===
+
+                """);
         gitletCommand(new String[]{"commit", "Remove f.txt"}, "");
         gitletCommand(new String[]{"merge", "b1"}, "Given branch is an ancestor of the current branch.");
         gitletCommand(new String[]{"switch", "b2"}, "");
