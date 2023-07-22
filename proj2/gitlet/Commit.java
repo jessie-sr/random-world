@@ -7,11 +7,12 @@ import java.io.Serializable;
 import java.util.*;
 import java.text.SimpleDateFormat;
 
-/** Represents a gitlet commit object.
+/**
+ * Represents a gitlet commit object.
  *  TODO: It's a good idea to give a description here of what else this Class
  *  does at a high level.
  *
- *  @author TODO
+ * @author TODO
  */
 public class Commit implements Serializable {
     /**
@@ -22,7 +23,9 @@ public class Commit implements Serializable {
      * variable is used. We've provided one example for `message`.
      */
 
-    /** The message of this Commit. */
+    /**
+     * The message of this Commit.
+     */
     private String message;
 
     /* TODO: fill in the rest of this class. */
@@ -85,6 +88,7 @@ public class Commit implements Serializable {
     public CommitTree getTree() {
         return currTree;
     }
+
     public void setTree(CommitTree currTree) {
         this.currTree = currTree;
     }

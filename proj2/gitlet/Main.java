@@ -1,17 +1,21 @@
 package gitlet;
 
-import org.reflections.vfs.Vfs;
-
 import java.io.File;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
-/** Driver class for Gitlet, a subset of the Git version-control system.
- *  @author TODO
+/**
+ * Driver class for Gitlet, a subset of the Git version-control system.
+ *
+ * @author TODO
  */
 public class Main {
 
-    /** Usage: java gitlet.Main ARGS, where ARGS contains
-     *  <COMMAND> <OPERAND1> <OPERAND2> ... 
+    /**
+     * Usage: java gitlet.Main ARGS, where ARGS contains
+     * <COMMAND> <OPERAND1> <OPERAND2> ...
      */
     public static void main(String[] args) {
         // TODO: what if args is empty?
@@ -20,28 +24,27 @@ public class Main {
             return;
         }
         String firstArg = args[0];
-        switch(firstArg) {
-            case "init":
+        switch (firstArg) {
+            case "init" ->
                 // TODO: handle the `init` command
-                init();
-                break;
-            case "add":
+                    init();
+            case "add" -> {
                 // TODO: handle the `add [filename]` command
                 if (!isInitialized()) {
                     System.out.println("Not in an initialized Gitlet directory.");
                     return;
                 }
                 add(args[1]);
-                break;
+            }
             // TODO: FILL THE REST IN
-            case "commit":
+            case "commit" -> {
                 if (!isInitialized()) {
                     System.out.println("Not in an initialized Gitlet directory.");
                     return;
                 }
                 commit(args[1]);
-                break;
-            case "restore":
+            }
+            case "restore" -> {
                 if (!isInitialized()) {
                     System.out.println("Not in an initialized Gitlet directory.");
                     return;
@@ -54,80 +57,78 @@ public class Main {
                 } else {
                     restore(args[1], args[3]);
                 }
-                break;
-            case "log":
+            }
+            case "log" -> {
                 if (!isInitialized()) {
                     System.out.println("Not in an initialized Gitlet directory.");
                     return;
                 }
                 log();
-                break;
-            case "global-log":
+            }
+            case "global-log" -> {
                 if (!isInitialized()) {
                     System.out.println("Not in an initialized Gitlet directory.");
                     return;
                 }
                 globalLog();
-                break;
-            case "status":
+            }
+            case "status" -> {
                 if (!isInitialized()) {
                     System.out.println("Not in an initialized Gitlet directory.");
                     return;
                 }
                 status();
-                break;
-            case "rm":
+            }
+            case "rm" -> {
                 if (!isInitialized()) {
                     System.out.println("Not in an initialized Gitlet directory.");
                     return;
                 }
                 rm(args[1]);
-                break;
-            case "find":
+            }
+            case "find" -> {
                 if (!isInitialized()) {
                     System.out.println("Not in an initialized Gitlet directory.");
                     return;
                 }
                 find(args[1]);
-                break;
-            case "branch":
+            }
+            case "branch" -> {
                 if (!isInitialized()) {
                     System.out.println("Not in an initialized Gitlet directory.");
                     return;
                 }
                 branch(args[1]);
-                break;
-            case "switch":
+            }
+            case "switch" -> {
                 if (!isInitialized()) {
                     System.out.println("Not in an initialized Gitlet directory.");
                     return;
                 }
                 switchBranch(args[1]);
-                break;
-            case "rm-branch":
+            }
+            case "rm-branch" -> {
                 if (!isInitialized()) {
                     System.out.println("Not in an initialized Gitlet directory.");
                     return;
                 }
                 rmBranch(args[1]);
-                break;
-            case "reset":
+            }
+            case "reset" -> {
                 if (!isInitialized()) {
                     System.out.println("Not in an initialized Gitlet directory.");
                     return;
                 }
                 reset(args[1]);
-                break;
-            case "merge":
+            }
+            case "merge" -> {
                 if (!isInitialized()) {
                     System.out.println("Not in an initialized Gitlet directory.");
                     return;
                 }
                 merge(args[1]);
-                break;
-            default:
-                System.out.println("No command with that name exists.");
-                break;
+            }
+            default -> System.out.println("No command with that name exists.");
         }
     }
 
@@ -196,7 +197,7 @@ public class Main {
         Map<String, Blob> stagedFiles = stagingArea.getStagedFiles();
         Commit newCommit = new Commit(message, parentCommit, parentCommit.getBranchName());
         Map<String, Blob> parentBlobs = parentCommit.getBlobs();
-        for (Map.Entry<String, Blob> entry: parentBlobs.entrySet()) {
+        for (Map.Entry<String, Blob> entry : parentBlobs.entrySet()) {
             String fileName = entry.getKey();
             Blob blob = entry.getValue();
             File file = new File(Repository.CWD, fileName);
@@ -205,7 +206,7 @@ public class Main {
             }
         }
         newCommit.getBlobs().putAll(parentCommit.getBlobs());
-        for (Map.Entry<String, Blob> entry: stagedFiles.entrySet()) {
+        for (Map.Entry<String, Blob> entry : stagedFiles.entrySet()) {
             String fileName = entry.getKey();
             Blob blob = entry.getValue();
             newCommit.addBlob(fileName, blob);
@@ -268,7 +269,7 @@ public class Main {
         CommitTree commitTree = CommitTree.load();
         Map<String, Commit> commits = commitTree.getCommits();
 
-        for (Commit commit: commits.values()) {
+        for (Commit commit : commits.values()) {
             System.out.println("===");
             System.out.println("commit " + commit.getId());
 
@@ -290,9 +291,9 @@ public class Main {
         Commit currMain = commitTree.getMain();
         Map<String, Commit> branches = commitTree.getBranches();
         System.out.println("=== Branches ===");
-        for (String branchName: branches.keySet()) {
+        for (String branchName : branches.keySet()) {
             if (branchName.equals(currMain.getBranchName())) {
-                System.out.println("*"+branchName);
+                System.out.println("*" + branchName);
             } else {
                 System.out.println(branchName);
             }
@@ -302,13 +303,13 @@ public class Main {
         Map<String, Blob> stagedFiles = stagingArea.getStagedFiles();
         Set<String> sortedStagedFiles = new TreeSet<>(stagedFiles.keySet());
         System.out.println("=== Staged Files ===");
-        for (String fileName: sortedStagedFiles) {
+        for (String fileName : sortedStagedFiles) {
             System.out.println(fileName);
         }
         System.out.println();
         System.out.println("=== Removed Files ===");
         Set<String> rmFiles = stagingArea.getRmFiles().keySet();
-        for (String fileName: rmFiles) {
+        for (String fileName : rmFiles) {
             System.out.println(fileName);
         }
         System.out.println();
@@ -350,7 +351,7 @@ public class Main {
         List<String> commitList = Utils.plainFilenamesIn(".gitlet/commit");
         CommitTree commitTree = CommitTree.load();
         boolean commitExist = false;
-        for (String commitId: commitList) {
+        for (String commitId : commitList) {
             Commit commit = commitTree.findCommit(commitId);
             if (commit.getMessage().equals(commitMessage)) {
                 commitExist = true;
@@ -393,7 +394,7 @@ public class Main {
         // Check if a working file in the branch to be switched to is untracked in the current branch.
         Map<String, Blob> newMainBlobs = newMain.getBlobs();
         Map<String, Blob> currMainBlobs = currMain.getBlobs();
-        for (String fileName: newMainBlobs.keySet()) {
+        for (String fileName : newMainBlobs.keySet()) {
             File overwrittenFile = new File(Repository.CWD, fileName);
             Blob b = newMainBlobs.get(fileName);
             if (overwrittenFile.isFile() && b != null && !b.isEqualContent(Utils.readContents(overwrittenFile)) && !currMainBlobs.containsKey(fileName)) {
@@ -402,13 +403,13 @@ public class Main {
             }
         }
         // Takes all files in the commit at the head of the given branch, and puts them in the working directory, overwriting the versions of the files that are already there if they exist.
-        for (String fileName: newMainBlobs.keySet()) {
+        for (String fileName : newMainBlobs.keySet()) {
             Blob b = newMainBlobs.get(fileName);
             File overwrittenFile = new File(Repository.CWD, fileName);
-            Utils.writeContents(overwrittenFile, (Object) b.getContent());
+            Utils.writeContents(overwrittenFile, b.getContent());
         }
         // Delete any files that are tracked in the current branch but are not present in the checked-out branch.
-        for (String fileName: currMainBlobs.keySet()) {
+        for (String fileName : currMainBlobs.keySet()) {
             Set<String> rmFiles = commitTree.getRmFiles().get(branchName);
             if (!newMainBlobs.containsKey(fileName) || rmFiles != null && rmFiles.contains(fileName)) {
                 File deletedFile = new File(Repository.CWD, fileName);
@@ -493,7 +494,7 @@ public class Main {
         Commit givenBranch = commitTree.getBranches().get(branchName);
         Map<String, Blob> mainBlobs = mainBranch.getBlobs();
         Map<String, Blob> givenBlobs = givenBranch.getBlobs();
-        for (String fileName: givenBlobs.keySet()) {
+        for (String fileName : givenBlobs.keySet()) {
             File overwrittenFile = new File(Repository.CWD, fileName);
             Blob b = givenBlobs.get(fileName);
             if (overwrittenFile.isFile() && b != null && !b.isEqualContent(Utils.readContents(overwrittenFile)) && !mainBlobs.containsKey(fileName)) {
@@ -518,7 +519,7 @@ public class Main {
             return;
         }
         Map<String, Blob> spBlobs = splitPoint.getBlobs();
-        for (String fileName: mainBlobs.keySet()) {
+        for (String fileName : mainBlobs.keySet()) {
             stagingArea.add(fileName, mainBlobs.get(fileName));
             if (commitTree.getRmFiles().get(mainBranch.getBranchName()) != null && commitTree.getRmFiles().get(mainBranch.getBranchName()).contains(fileName)) {
                 stagingArea.remove(fileName);
@@ -534,7 +535,7 @@ public class Main {
                 }
             }
         }
-        for (String fileName: givenBlobs.keySet()) {
+        for (String fileName : givenBlobs.keySet()) {
             Blob givenBlob = givenBlobs.get(fileName);
             // Any files that were not present at the split point and are present only in the given branch should be checked out and staged.
             if (!spBlobs.containsKey(fileName) && !mainBlobs.containsKey(fileName)) {
@@ -557,7 +558,7 @@ public class Main {
                 }
             }
         }
-        for (String fileName: spBlobs.keySet()) {
+        for (String fileName : spBlobs.keySet()) {
             if (!givenBlobs.containsKey(fileName) && mainBlobs.containsKey(fileName)) {
                 Blob mainBlob = mainBlobs.get(fileName);
                 Blob spBlob = spBlobs.get(fileName);
@@ -568,7 +569,7 @@ public class Main {
         }
         boolean conflict = false;
         Set<String> fileNames = fileSet(givenBlobs, mainBlobs);
-        for (String fileName: fileNames) {
+        for (String fileName : fileNames) {
             conflict = isInConflict(givenBlobs, mainBlobs, spBlobs, fileName);
         }
         String commitMessage = "Merged " + branchName + " into " + mainBranch.getBranchName() + ".";
@@ -587,7 +588,7 @@ public class Main {
         Map<String, Blob> stagedFiles = stagingArea.getStagedFiles();
         Commit newCommit = new Commit(message, parentCommit, parentCommit.getBranchName());
         newCommit.addParent(givenCommit);
-        for (Map.Entry<String, Blob> entry: stagedFiles.entrySet()) {
+        for (Map.Entry<String, Blob> entry : stagedFiles.entrySet()) {
             String fileName = entry.getKey();
             Blob blob = entry.getValue();
             newCommit.addBlob(fileName, blob);
@@ -600,10 +601,8 @@ public class Main {
 
     public static Set<String> fileSet(Map<String, Blob> givenBlobs, Map<String, Blob> mainBlobs) {
         Set<String> fileNames = new TreeSet<>(givenBlobs.keySet());
-        for (String fileName: mainBlobs.keySet()) {
-            if (!fileNames.contains(fileName)) {
-                fileNames.add(fileName);
-            }
+        for (String fileName : mainBlobs.keySet()) {
+            fileNames.add(fileName);
         }
         return fileNames;
     }
@@ -631,7 +630,7 @@ public class Main {
             }
         }
         // The contents of file in the given branch are changed and the one in main branch is deleted.
-        else if (!file.exists() && !mainBlobs.containsKey(fileName) && givenBlobs.containsKey(fileName) && spBlobs.containsKey(fileName) ) {
+        else if (!file.exists() && !mainBlobs.containsKey(fileName) && givenBlobs.containsKey(fileName) && spBlobs.containsKey(fileName)) {
             Blob spBlob = spBlobs.get(fileName);
             Blob givenBlob = givenBlobs.get(fileName);
             if (!givenBlob.isEqualContent(spBlob.getContent())) {
@@ -656,9 +655,7 @@ public class Main {
             if (spBlobs.containsKey(fileName)) {
                 Blob spBlob = spBlobs.get(fileName);
                 Blob mainBlob = mainBlobs.get(fileName);
-                if (!spBlob.isEqualContent(mainBlob.getContent())) {
-                    return true;
-                }
+                return !spBlob.isEqualContent(mainBlob.getContent());
             } else {
                 return true;
             }
