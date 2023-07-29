@@ -1,0 +1,174 @@
+package byow.Core;
+
+import byow.TileEngine.TETile;
+import byow.TileEngine.Tileset;
+
+import java.util.*;
+
+public class RoomGenerator {
+    private Random random;
+    private int numRooms;
+    private int minWidth;
+    private int maxWidth;
+    private int minHeight;
+    private int maxHeight;
+    private int[][] board = new int[Engine.WIDTH][Engine.HEIGHT];
+    private TETile[][] world;
+
+    private Map<Integer, Room> roomMap;
+
+    public RoomGenerator(TETile[][] world, long seed) {
+        this.world = world;
+        this.random = new Random(seed);
+        this.numRooms = 30;
+        this.minWidth = 4;
+        this.maxWidth = Engine.WIDTH / 10;
+        this.minHeight = 4;
+        this.maxHeight = Engine.HEIGHT / 3;
+        this.roomMap = new HashMap<>();
+    }
+
+    public void drawRooms() {
+        generateRooms();
+        connectRooms();
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[0].length; j++) {
+                if (board[i][j] == 1) {
+                    if (i > 0 && i < board.length - 1 && j > 0 && j < board[0].length - 1 && changeWall(i, j)) {
+                        world[i][j] = Tileset.FLOOR;
+                    } else {
+                        world[i][j] = Tileset.WALL;
+                    }
+                } else if (board[i][j] == 2) {
+                    world[i][j] = Tileset.FLOOR;
+                }
+            }
+        }
+    }
+
+    public boolean changeWall(int i, int j) {
+        if (board[i - 1][j] == 2 && board[i + 1][j] == 2) {
+            return true;
+        } else if (board[i][j - 1] == 2 && board[i][j + 1] == 2) {
+            return true;
+        }
+        return false;
+    }
+
+    public void generateRooms() {
+        int count = 0;
+        for (int i = 0; i < numRooms; i++) {
+            int width = random.nextInt(maxWidth - minWidth + 1) + minWidth;
+            int height = random.nextInt(maxHeight - minHeight + 1) + minHeight;
+            int x = random.nextInt(board.length - width);
+            int y = random.nextInt(board[0].length - height);
+
+            if (isAreaAvailable(x, y, width, height)) {
+                Room newRoom = new Room(world, count, width, height, x, y);
+                roomMap.put(count, newRoom);
+                occupyArea(x, y, width, height);
+                count++;
+            }
+        }
+        // Update numRooms to the actual count.
+        this.numRooms = count;
+    }
+
+    private boolean isAreaAvailable(int x, int y, int width, int height) {
+        for (int i = x; i < x + width; i++) {
+            for (int j = y; j < y + height; j++) {
+                if (board[i][j] != 0) {
+                    return false; // The area is already occupied
+                }
+            }
+        }
+        return true;
+    }
+
+    private void occupyArea(int x, int y, int width, int height) {
+        for (int i = x; i < x + width; i++) {
+            for (int j = y; j < y + height; j++) {
+                if (i == x || i == x + width - 1 || j == y || j == y + height - 1) {
+                    // Mark wall-area as 1.
+                    board[i][j] = 1;
+                } else {
+                    // Mark floor-area as 2.
+                    board[i][j] = 2;
+                }
+            }
+        }
+    }
+
+    public void connectRooms() {
+        for (int i = 0; i < numRooms - 1; i++) {
+            Room room1 = roomMap.get(i);
+            Room room2 = roomMap.get(i + 1);
+
+            // Get the center coordinates of each room
+            int x1 = room1.getX() + room1.getWidth() / 2;
+            int y1 = room1.getY() + room1.getHeight() / 2;
+            int x2 = room2.getX() + room2.getWidth() / 2;
+            int y2 = room2.getY() + room2.getHeight() / 2;
+
+            // Generate a hallway between the two rooms
+            generateHallway(x1, y1, x2, y2);
+        }
+    }
+
+    private void generateHallway(int x1, int y1, int x2, int y2) {
+        int dx = Integer.compare(x2, x1); // Direction of movement in the x-axis
+        int dy = Integer.compare(y2, y1); // Direction of movement in the y-axis
+
+        // Generate a horizontal hallway
+        for (int x = x1; x != x2 + dx; x += dx) {
+            int y = y1;
+            if (board[x][y] == 1) {
+                board[x][y] = 2;
+                if (board[x][y + 1] == 0) {
+                    board[x][y + 1] = 1;
+                }
+                if (board[x][y - 1] == 0) {
+                    board[x][y - 1] = 1;
+                }
+            } else if (board[x][y] == 0) {
+                board[x][y] = 2;
+                if (board[x][y + 1] == 0) {
+                    board[x][y + 1] = 1;
+                }
+                if (board[x][y - 1] == 0) {
+                    board[x][y - 1] = 1;
+                }
+            }
+        }
+
+        if (dy > 0) {
+            board[x2 + dx][y1 - 1] = 1;
+            board[x2 + dx][y1] = 1;
+        } else if (dy < 0){
+            board[x2 + dx][y1 + 1] = 1;
+            board[x2 + dx][y1] = 1;
+        }
+
+        // Generate a vertical hallway
+        for (int y = y1; y != y2 + dy; y += dy) {
+            int x = x2;
+            if (board[x][y] == 1) {
+                board[x][y] = 2;
+                if (board[x - 1][y] == 0) {
+                    board[x - 1][y] = 1;
+                }
+                if (board[x + 1][y] == 0) {
+                    board[x + 1][y] = 1;
+                }
+            } else if (board[x][y] == 0) {
+                board[x][y] = 2;
+                if (board[x - 1][y] == 0) {
+                    board[x - 1][y] = 1;
+                }
+                if (board[x + 1][y] == 0) {
+                    board[x + 1][y] = 1;
+                }
+            }
+        }
+    }
+}
