@@ -25,10 +25,15 @@ public class RoomGenerator {
                 if(board[row][col] == 2) {
                     playerX = row;
                     playerY = col;
+                    world[playerX][playerY] = Tileset.AVATAR;
                     return;
                 }
             }
         }
+    }
+
+    public void updateUserPosition() {
+        world[playerX][playerY] = Tileset.AVATAR;
     }
 
     public RoomGenerator(TETile[][] world, long seed) {
@@ -42,10 +47,29 @@ public class RoomGenerator {
         this.roomMap = new HashMap<>();
     }
 
+    public RoomGenerator(long seed) {
+        this.world = new TETile[Engine.WIDTH][Engine.HEIGHT];
+        for (int x = 0; x < Engine.WIDTH; x += 1) {
+            for (int y = 0; y < Engine.HEIGHT; y += 1) {
+                world[x][y] = Tileset.NOTHING;
+            }
+        }
+        this.random = new Random(seed);
+        this.numRooms = 30;
+        this.minWidth = 4;
+        this.maxWidth = Engine.WIDTH / 10;
+        this.minHeight = 4;
+        this.maxHeight = Engine.HEIGHT / 3;
+        this.roomMap = new HashMap<>();
+    }
+
+
+
+
     public void drawRooms() {
-        generateRooms();
-        connectRooms();
-        initUserPosition();
+//        generateRooms();
+//        connectRooms();
+//        initUserPosition();
         for (int i = 0; i < board.length; i++) {
             for (int j = 0; j < board[0].length; j++) {
                 if (board[i][j] == 1) {

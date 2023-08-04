@@ -20,15 +20,16 @@ public class Engine {
 
     private long seed;
     private RoomGenerator currGenerator;
-    private TETile[][] finalWorldFrame = null;
+    private TETile[][] backWorld;
     private TETile GUI;
-
-    private static final String[] ENCOURAGEMENT = {"You can do this!", "I believe in you!",
-            "You got this!", "You're a star!", "Go Bears!",
-            "Too easy for you!", "Wow, so impressive!"};
-
     private int prevMouseX;
     private int prevMouseY;
+    
+    public Engine() {
+        this.GUI = new TETile('#',"Mouse initialized ",
+                new Color(216, 128, 128), Color.BLACK,"gui");
+    }
+    
 
     /**
      * Method used for exploring a fresh world. This method should handle all inputs,
@@ -61,8 +62,10 @@ public class Engine {
                         return;
                     } else {
                         currGenerator.playerY += 1;
+                        currGenerator.updateUserPosition();
                         currGenerator.drawRooms();
-                        teRender.renderFrame(finalWorldFrame, GUI);
+                        teRender.renderFrame(backWorld, GUI);
+                        System.out.println("KEYB MOVED" + currKey);
                     }
                 }
                 case 'a' -> {
@@ -70,8 +73,10 @@ public class Engine {
                         return;
                     } else {
                         currGenerator.playerX -= 1;
+                        currGenerator.updateUserPosition();
                         currGenerator.drawRooms();
-                        teRender.renderFrame(finalWorldFrame, GUI);
+                        teRender.renderFrame(backWorld, GUI);
+                        System.out.println("KEYB MOVED" + currKey);
                     }
                 }
                 case 's' -> {
@@ -79,8 +84,10 @@ public class Engine {
                         return;
                     } else {
                         currGenerator.playerY -= 1;
+                        currGenerator.updateUserPosition();
                         currGenerator.drawRooms();
-                        teRender.renderFrame(finalWorldFrame, GUI);
+                        teRender.renderFrame(backWorld, GUI);
+                        System.out.println("KEYB MOVED" +currKey);
                     }
                 }
                 case 'd' -> {
@@ -88,8 +95,10 @@ public class Engine {
                         return;
                     } else {
                         currGenerator.playerX += 1;
+                        currGenerator.updateUserPosition();
                         currGenerator.drawRooms();
-                        teRender.renderFrame(finalWorldFrame, GUI);
+                        teRender.renderFrame(backWorld, GUI);
+                        System.out.println("KEYB MOVED"+currKey);
                     }
                 }
             }
@@ -107,7 +116,7 @@ public class Engine {
             int mousePointer = currGenerator.board[currMouseX][currMouseY-1];
             this.prevMouseX = currMouseX;
             this.prevMouseY = currMouseY;
-            System.out.println("IF TRUE");
+//            System.out.println("MOUSE MOVED");
             GUI = new TETile('#',"Your mouse is at  " + mousePointer,
                     new Color(216, 128, 128), Color.BLACK,"gui");
             teRender.renderFrame(currGenerator.world,GUI);
@@ -129,16 +138,17 @@ public class Engine {
             // initialize the tile rendering engine with a window of size WIDTH x HEIGHT
             teRender.initialize(WIDTH, HEIGHT,0,1);
             // initialize tiles
-            finalWorldFrame = new TETile[WIDTH][HEIGHT];
-            for (int x = 0; x < WIDTH; x += 1) {
-                for (int y = 0; y < HEIGHT; y += 1) {
-                    finalWorldFrame[x][y] = Tileset.NOTHING;
-                }
-            }
-            currGenerator = new RoomGenerator(finalWorldFrame, seed);
-            currGenerator.drawRooms();
+
+
+            currGenerator = new RoomGenerator(seed);
+            backWorld = currGenerator.world;
+            currGenerator.generateRooms();
+            currGenerator.connectRooms();
+            currGenerator.initUserPosition(); //update user-position info
+            currGenerator.drawRooms(); // call generateRooms() and connect() first;
+
             // draws the world to the screen.
-            teRender.renderFrame(finalWorldFrame);
+            teRender.renderFrame(backWorld);
         }
         if(input.equals("l") || input.equals("L")) {
             // load files
@@ -241,8 +251,7 @@ public class Engine {
         //
         // See proj3.byow.InputDemo for a demo of how you can make a nice clean interface
         // that works for many different input types.
-
-        TETile[][] finalWorldFrame = null;
+        
         Engine engine = new Engine();
 
         // Start a new game by processing the first character 'n' (new game)
@@ -254,18 +263,13 @@ public class Engine {
             teRender.initialize(WIDTH, HEIGHT);
 
             // initialize tiles
-            finalWorldFrame = new TETile[WIDTH][HEIGHT];
-            for (int x = 0; x < WIDTH; x += 1) {
-                for (int y = 0; y < HEIGHT; y += 1) {
-                    finalWorldFrame[x][y] = Tileset.NOTHING;
-                }
-            }
 
-            RoomGenerator newGenerator = new RoomGenerator(finalWorldFrame, seed);
+            RoomGenerator newGenerator = new RoomGenerator(seed);
+            backWorld = newGenerator.world;
             newGenerator.drawRooms();
 
             // draws the world to the screen.
-            teRender.renderFrame(finalWorldFrame);
+            teRender.renderFrame(backWorld);
 
             input = input.substring(seedEndIndex);
         } else {
@@ -290,6 +294,6 @@ public class Engine {
         }
 
         // Get the final world frame after all commands are processed
-        return finalWorldFrame;
+        return backWorld;
     }
 }
