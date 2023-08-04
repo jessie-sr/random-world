@@ -114,7 +114,7 @@ public class TERenderer {
                 world[x][y].draw(x + xOffset, y + yOffset);
             }
         }
-        GUI.drawString(width/2,0);
+        GUI.drawString(width/2,height-1);
 
 
         StdDraw.show();

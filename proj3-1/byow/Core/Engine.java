@@ -109,11 +109,11 @@ public class Engine {
     public void checkMouse(int prevMouseX,int prevMouseY) {
         int currMouseX = (int) StdDraw.mouseX();
         int currMouseY = (int) StdDraw.mouseY();
-        if(currMouseY == 0) {
+        if(currMouseY == HEIGHT) {
             return;
         }
         if(prevMouseX != currMouseX || prevMouseY != currMouseY) {
-            int mousePointer = currGenerator.board[currMouseX][currMouseY-1];
+            int mousePointer = currGenerator.board[currMouseX][currMouseY];
             this.prevMouseX = currMouseX;
             this.prevMouseY = currMouseY;
 //            System.out.println("MOUSE MOVED");
@@ -136,7 +136,7 @@ public class Engine {
             this.seed =  RandomUtils.uniform(new Random(),Integer.MAX_VALUE);
 
             // initialize the tile rendering engine with a window of size WIDTH x HEIGHT
-            teRender.initialize(WIDTH, HEIGHT,0,1);
+            teRender.initialize(WIDTH, HEIGHT);
             // initialize tiles
 
 
