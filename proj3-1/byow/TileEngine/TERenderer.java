@@ -96,6 +96,27 @@ public class TERenderer {
                 world[x][y].draw(x + xOffset, y + yOffset);
             }
         }
+
+
+        StdDraw.show();
+    }
+
+    public void renderFrame(TETile[][] world,TETile GUI ) {
+        int numXTiles = world.length;
+        int numYTiles = world[0].length;
+        StdDraw.clear(new Color(0, 0, 0));
+        for (int x = 0; x < numXTiles; x += 1) {
+            for (int y = 0; y < numYTiles; y += 1) {
+                if (world[x][y] == null) {
+                    throw new IllegalArgumentException("Tile at position x=" + x + ", y=" + y
+                            + " is null.");
+                }
+                world[x][y].draw(x + xOffset, y + yOffset);
+            }
+        }
+        GUI.drawString(width/2,0);
+
+
         StdDraw.show();
     }
 }

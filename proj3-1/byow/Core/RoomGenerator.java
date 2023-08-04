@@ -12,8 +12,8 @@ public class RoomGenerator {
     private int maxWidth;
     private int minHeight;
     private int maxHeight;
-    private int[][] board = new int[Engine.WIDTH][Engine.HEIGHT];
-    private TETile[][] world;
+    public int[][] board = new int[Engine.WIDTH][Engine.HEIGHT];
+    public TETile[][] world;
 
     private Map<Integer, Room> roomMap;
 

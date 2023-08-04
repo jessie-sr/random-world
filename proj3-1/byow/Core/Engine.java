@@ -12,11 +12,15 @@ import java.awt.Font;
 import java.util.Random;
 
 public class Engine {
-    TERenderer ter = new TERenderer();
+    TERenderer teRender = new TERenderer();
     /* Feel free to change the WIDTH and HEIGHT. */
     public static final int WIDTH = 80;
     public static final int HEIGHT = 30;
     private boolean gameOver = false;
+
+    private long seed;
+    private RoomGenerator currGenerator;
+    private TETile[][] finalWorldFrame = null;
 
     private static final String[] ENCOURAGEMENT = {"You can do this!", "I believe in you!",
             "You got this!", "You're a star!", "Go Bears!",
@@ -30,6 +34,28 @@ public class Engine {
         // display init UI first
         //process user's init input
         keyboardInit();
+        int prevMouseX = (int) StdDraw.mouseX();
+        int prevMouseY = (int) StdDraw.mouseY();
+        while(!gameOver) {
+            int currMouseX = (int) StdDraw.mouseX();
+            int currMouseY = (int) StdDraw.mouseY();
+            if(currMouseY == 0) {
+                continue;
+            }
+            if(prevMouseX != currMouseX || prevMouseY != currMouseY) {
+                int mousePointer = currGenerator.board[currMouseX][currMouseY-1];
+                prevMouseX = currMouseX;
+                prevMouseY = currMouseY;
+                System.out.println("IF TRUE");
+                TETile GUI = new TETile('#',"You are at  " + mousePointer,
+                        new Color(216, 128, 128), Color.darkGray,"gui");
+                teRender.renderFrame(currGenerator.world,GUI);
+
+                
+            }
+            StdDraw.pause(500);
+        }
+
 
 
     }
@@ -43,11 +69,10 @@ public class Engine {
             return;
         }
         if(input.equals("n") || input.equals("N")) {
-            TETile[][] finalWorldFrame = null;
-            long seed =  RandomUtils.uniform(new Random(),Integer.MAX_VALUE);
+            this.seed =  RandomUtils.uniform(new Random(),Integer.MAX_VALUE);
 
             // initialize the tile rendering engine with a window of size WIDTH x HEIGHT
-            ter.initialize(WIDTH, HEIGHT);
+            teRender.initialize(WIDTH, HEIGHT,0,1);
             // initialize tiles
             finalWorldFrame = new TETile[WIDTH][HEIGHT];
             for (int x = 0; x < WIDTH; x += 1) {
@@ -55,10 +80,10 @@ public class Engine {
                     finalWorldFrame[x][y] = Tileset.NOTHING;
                 }
             }
-            RoomGenerator newGenerator = new RoomGenerator(finalWorldFrame, seed);
-            newGenerator.drawRooms();
+            currGenerator = new RoomGenerator(finalWorldFrame, seed);
+            currGenerator.drawRooms();
             // draws the world to the screen.
-            ter.renderFrame(finalWorldFrame);
+            teRender.renderFrame(finalWorldFrame);
         }
         if(input.equals("l") || input.equals("L")) {
             // load files
@@ -87,6 +112,24 @@ public class Engine {
 //        drawFrame();
     }
 
+    public void drawMouse(int x, int y) {
+        /* Take the input string S and display it at the center of the screen,
+         * with the pen settings given below. */
+        StdDraw.setCanvasSize(WIDTH * 8, HEIGHT * 16);
+        Font font = new Font("Monaco", Font.BOLD, 30);
+        StdDraw.setFont(font);
+        StdDraw.setXscale(0, WIDTH);
+        StdDraw.setYscale(0, HEIGHT);
+        StdDraw.clear(Color.BLACK);
+        StdDraw.enableDoubleBuffering();
+
+        StdDraw.setPenColor(Color.WHITE);
+        Font fontBig = new Font("Monaco", Font.BOLD, 30);
+        StdDraw.setFont(fontBig);
+        StdDraw.text(WIDTH / 2, HEIGHT * 0.9, x + "and" +y);
+        StdDraw.show();
+    }
+
 
     public void drawFrame() {
         /* Take the input string S and display it at the center of the screen,
@@ -111,6 +154,8 @@ public class Engine {
         StdDraw.text(WIDTH / 2, HEIGHT /2 + 4, "quit game (Q)");
         StdDraw.show();
     }
+
+
 
     /**
      * Method used for autograding and testing your code. The input string will be a series
@@ -151,7 +196,7 @@ public class Engine {
             long seed = Long.parseLong(input.substring(1, seedEndIndex));
 
             // initialize the tile rendering engine with a window of size WIDTH x HEIGHT
-            ter.initialize(WIDTH, HEIGHT);
+            teRender.initialize(WIDTH, HEIGHT);
 
             // initialize tiles
             finalWorldFrame = new TETile[WIDTH][HEIGHT];
@@ -165,7 +210,7 @@ public class Engine {
             newGenerator.drawRooms();
 
             // draws the world to the screen.
-            ter.renderFrame(finalWorldFrame);
+            teRender.renderFrame(finalWorldFrame);
 
             input = input.substring(seedEndIndex);
         } else {
