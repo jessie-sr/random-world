@@ -4,17 +4,112 @@ import byow.TileEngine.TERenderer;
 import byow.TileEngine.TETile;
 import byow.TileEngine.Tileset;
 
+import byow.byowTools.RandomUtils;
+import edu.princeton.cs.algs4.StdDraw;
+
+import java.awt.Color;
+import java.awt.Font;
+import java.util.Random;
+
 public class Engine {
     TERenderer ter = new TERenderer();
-    /* Feel free to change the width and height. */
+    /* Feel free to change the WIDTH and HEIGHT. */
     public static final int WIDTH = 80;
     public static final int HEIGHT = 30;
+    private boolean gameOver = false;
+
+    private static final String[] ENCOURAGEMENT = {"You can do this!", "I believe in you!",
+            "You got this!", "You're a star!", "Go Bears!",
+            "Too easy for you!", "Wow, so impressive!"};
 
     /**
      * Method used for exploring a fresh world. This method should handle all inputs,
      * including inputs from the main menu.
      */
     public void interactWithKeyboard() {
+        // display init UI first
+        //process user's init input
+        keyboardInit();
+
+
+    }
+
+    private void keyboardInit() {
+        // display init UI first
+        drawFrame();
+        //process user's init input
+        String input = solicitNCharsInput(1);
+        if(input.equals("q") || input.equals("Q")) {
+            return;
+        }
+        if(input.equals("n") || input.equals("N")) {
+            TETile[][] finalWorldFrame = null;
+            long seed =  RandomUtils.uniform(new Random(),Integer.MAX_VALUE);
+
+            // initialize the tile rendering engine with a window of size WIDTH x HEIGHT
+            ter.initialize(WIDTH, HEIGHT);
+            // initialize tiles
+            finalWorldFrame = new TETile[WIDTH][HEIGHT];
+            for (int x = 0; x < WIDTH; x += 1) {
+                for (int y = 0; y < HEIGHT; y += 1) {
+                    finalWorldFrame[x][y] = Tileset.NOTHING;
+                }
+            }
+            RoomGenerator newGenerator = new RoomGenerator(finalWorldFrame, seed);
+            newGenerator.drawRooms();
+            // draws the world to the screen.
+            ter.renderFrame(finalWorldFrame);
+        }
+        if(input.equals("l") || input.equals("L")) {
+            // load files
+        }
+
+    }
+
+
+    public String solicitNCharsInput(int n) {
+        //TODO: Read n letters of player input
+        int i=0;
+        String ret="";
+        while(i<n) {
+            if(StdDraw.hasNextKeyTyped()) {
+                char currKey = StdDraw.nextKeyTyped();
+                i++;
+                ret += currKey;
+//                drawFrame(ret);
+            }
+        }
+//        StdDraw.pause(500);
+        return ret;
+    }
+
+    public static void main(String[] args) {
+//        drawFrame();
+    }
+
+
+    public void drawFrame() {
+        /* Take the input string S and display it at the center of the screen,
+         * with the pen settings given below. */
+        StdDraw.setCanvasSize(WIDTH * 8, HEIGHT * 16);
+        Font font = new Font("Monaco", Font.BOLD, 30);
+        StdDraw.setFont(font);
+        StdDraw.setXscale(0, WIDTH);
+        StdDraw.setYscale(0, HEIGHT);
+        StdDraw.clear(Color.BLACK);
+        StdDraw.enableDoubleBuffering();
+
+        StdDraw.setPenColor(Color.WHITE);
+        Font fontBig = new Font("Monaco", Font.BOLD, 30);
+        StdDraw.setFont(fontBig);
+        StdDraw.text(WIDTH / 2, HEIGHT * 0.9, "CS61BL: THE GAME");
+
+        Font fontSmall = new Font("Monaco", Font.BOLD, 20);
+        StdDraw.setFont(fontSmall);
+        StdDraw.text(WIDTH / 2, HEIGHT /2, "new game (N)");
+        StdDraw.text(WIDTH / 2, HEIGHT /2 + 2, "load game (L)");
+        StdDraw.text(WIDTH / 2, HEIGHT /2 + 4, "quit game (Q)");
+        StdDraw.show();
     }
 
     /**
