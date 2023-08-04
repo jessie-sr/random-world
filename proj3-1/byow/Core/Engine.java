@@ -21,10 +21,14 @@ public class Engine {
     private long seed;
     private RoomGenerator currGenerator;
     private TETile[][] finalWorldFrame = null;
+    private TETile GUI;
 
     private static final String[] ENCOURAGEMENT = {"You can do this!", "I believe in you!",
             "You got this!", "You're a star!", "Go Bears!",
             "Too easy for you!", "Wow, so impressive!"};
+
+    private int prevMouseX;
+    private int prevMouseY;
 
     /**
      * Method used for exploring a fresh world. This method should handle all inputs,
@@ -34,30 +38,81 @@ public class Engine {
         // display init UI first
         //process user's init input
         keyboardInit();
-        int prevMouseX = (int) StdDraw.mouseX();
-        int prevMouseY = (int) StdDraw.mouseY();
-        while(!gameOver) {
-            int currMouseX = (int) StdDraw.mouseX();
-            int currMouseY = (int) StdDraw.mouseY();
-            if(currMouseY == 0) {
-                continue;
-            }
-            if(prevMouseX != currMouseX || prevMouseY != currMouseY) {
-                int mousePointer = currGenerator.board[currMouseX][currMouseY-1];
-                prevMouseX = currMouseX;
-                prevMouseY = currMouseY;
-                System.out.println("IF TRUE");
-                TETile GUI = new TETile('#',"You are at  " + mousePointer,
-                        new Color(216, 128, 128), Color.darkGray,"gui");
-                teRender.renderFrame(currGenerator.world,GUI);
+        this.prevMouseX = (int) StdDraw.mouseX();
+        this.prevMouseY = (int) StdDraw.mouseY();
 
-                
-            }
-            StdDraw.pause(500);
+        while(!gameOver) {
+            checkMouse(prevMouseX,prevMouseY);
+            checkKeyBoard();
+
         }
 
 
 
+    }
+
+    private void checkKeyBoard() {
+        //TODO: Read n letters of player input
+        if(StdDraw.hasNextKeyTyped()) {
+            char currKey = StdDraw.nextKeyTyped();
+            switch (currKey) {
+                case 'w' -> {
+                    if (currGenerator.board[currGenerator.playerX][currGenerator.playerY + 1] != 2) {
+                        return;
+                    } else {
+                        currGenerator.playerY += 1;
+                        currGenerator.drawRooms();
+                        teRender.renderFrame(finalWorldFrame, GUI);
+                    }
+                }
+                case 'a' -> {
+                    if (currGenerator.board[currGenerator.playerX - 1][currGenerator.playerY] != 2) {
+                        return;
+                    } else {
+                        currGenerator.playerX -= 1;
+                        currGenerator.drawRooms();
+                        teRender.renderFrame(finalWorldFrame, GUI);
+                    }
+                }
+                case 's' -> {
+                    if (currGenerator.board[currGenerator.playerX][currGenerator.playerY - 1] != 2) {
+                        return;
+                    } else {
+                        currGenerator.playerY -= 1;
+                        currGenerator.drawRooms();
+                        teRender.renderFrame(finalWorldFrame, GUI);
+                    }
+                }
+                case 'd' -> {
+                    if (currGenerator.board[currGenerator.playerX + 1][currGenerator.playerY] != 2) {
+                        return;
+                    } else {
+                        currGenerator.playerX += 1;
+                        currGenerator.drawRooms();
+                        teRender.renderFrame(finalWorldFrame, GUI);
+                    }
+                }
+            }
+        }
+
+    }
+
+    public void checkMouse(int prevMouseX,int prevMouseY) {
+        int currMouseX = (int) StdDraw.mouseX();
+        int currMouseY = (int) StdDraw.mouseY();
+        if(currMouseY == 0) {
+            return;
+        }
+        if(prevMouseX != currMouseX || prevMouseY != currMouseY) {
+            int mousePointer = currGenerator.board[currMouseX][currMouseY-1];
+            this.prevMouseX = currMouseX;
+            this.prevMouseY = currMouseY;
+            System.out.println("IF TRUE");
+            GUI = new TETile('#',"Your mouse is at  " + mousePointer,
+                    new Color(216, 128, 128), Color.BLACK,"gui");
+            teRender.renderFrame(currGenerator.world,GUI);
+//            StdDraw.pause(500);
+        }
     }
 
     private void keyboardInit() {

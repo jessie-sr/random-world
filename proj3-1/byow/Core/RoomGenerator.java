@@ -12,10 +12,24 @@ public class RoomGenerator {
     private int maxWidth;
     private int minHeight;
     private int maxHeight;
+    public int playerX;
+    public int playerY;
     public int[][] board = new int[Engine.WIDTH][Engine.HEIGHT];
     public TETile[][] world;
 
     private Map<Integer, Room> roomMap;
+
+    public void initUserPosition() {
+        for(int row = 0;row < Engine.WIDTH;row++) {
+            for(int col = 0;col< Engine.HEIGHT;col++) {
+                if(board[row][col] == 2) {
+                    playerX = row;
+                    playerY = col;
+                    return;
+                }
+            }
+        }
+    }
 
     public RoomGenerator(TETile[][] world, long seed) {
         this.world = world;
@@ -31,6 +45,7 @@ public class RoomGenerator {
     public void drawRooms() {
         generateRooms();
         connectRooms();
+        initUserPosition();
         for (int i = 0; i < board.length; i++) {
             for (int j = 0; j < board[0].length; j++) {
                 if (board[i][j] == 1) {
@@ -44,6 +59,7 @@ public class RoomGenerator {
                 }
             }
         }
+        world[playerX][playerY] = Tileset.AVATAR;
     }
 
     public boolean changeWall(int i, int j) {
@@ -113,6 +129,7 @@ public class RoomGenerator {
             // Generate a hallway between the two rooms
             generateHallway(x1, y1, x2, y2);
         }
+
     }
 
     private void generateHallway(int x1, int y1, int x2, int y2) {
