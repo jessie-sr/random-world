@@ -24,6 +24,7 @@ public class Engine {
     private TETile GUI;
     private int prevMouseX;
     private int prevMouseY;
+    String[] boardToWorldMap = {"outside","wall","grass"};
     
     public Engine() {
         this.GUI = new TETile('#',"Mouse initialized ",
@@ -120,7 +121,7 @@ public class Engine {
             this.prevMouseX = currMouseX;
             this.prevMouseY = currMouseY;
 //            System.out.println("MOUSE MOVED");
-            GUI = new TETile('#',"Your mouse is at  " + mousePointer,
+            GUI = new TETile('#',"Your mouse is at  " + boardToWorldMap[mousePointer],
                     new Color(216, 128, 128), Color.BLACK,"gui");
             teRender.renderFrame(currGenerator.world,GUI);
 //            StdDraw.pause(500);
