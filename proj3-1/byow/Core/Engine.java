@@ -27,7 +27,6 @@ public class Engine implements Serializable {
     private int prevMouseX;
     private int prevMouseY;
     private Character preKeyPress = 'w';
-    private boolean lightOn = false;
     private static String[] boardToWorldMap = {"outside","wall","floor"};
     private static int GUINUM = 4;
     private File savedWorlds = new File("./savedWorld");
@@ -75,9 +74,6 @@ public class Engine implements Serializable {
                         return;
                     } else {
                         currGenerator.playerY += 1;
-                        currGenerator.updateUserPosition();
-                        currGenerator.drawRooms();
-                        teRender.renderFrame(backWorld, GUI);
                         System.out.println("KEYB MOVED " + currKey);
                         preKeyPress = 'w';
                     }
@@ -87,9 +83,6 @@ public class Engine implements Serializable {
                         return;
                     } else {
                         currGenerator.playerX -= 1;
-                        currGenerator.updateUserPosition();
-                        currGenerator.drawRooms();
-                        teRender.renderFrame(backWorld, GUI);
                         System.out.println("KEYB MOVED " + currKey);
                         preKeyPress = 'a';
                     }
@@ -99,9 +92,6 @@ public class Engine implements Serializable {
                         return;
                     } else {
                         currGenerator.playerY -= 1;
-                        currGenerator.updateUserPosition();
-                        currGenerator.drawRooms();
-                        teRender.renderFrame(backWorld, GUI);
                         System.out.println("KEYB MOVED " +currKey);
                         preKeyPress = 's';
                     }
@@ -111,9 +101,6 @@ public class Engine implements Serializable {
                         return;
                     } else {
                         currGenerator.playerX += 1;
-                        currGenerator.updateUserPosition();
-                        currGenerator.drawRooms();
-                        teRender.renderFrame(backWorld, GUI);
                         System.out.println("KEYB MOVED "+currKey);
                         preKeyPress = 'd';
                     }
@@ -122,7 +109,7 @@ public class Engine implements Serializable {
                     preKeyPress = ':';
                 }
                 case 'q' -> {
-                    if(preKeyPress != null && preKeyPress != ':') {
+                    if(preKeyPress != ':') {
                         return;
                     }
                     //save the world
@@ -148,22 +135,30 @@ public class Engine implements Serializable {
 
                 }
                 case 'l' -> {
-                    if (lightOn) {
+                    if (currGenerator.isLightOn) {
                         //light off.
+                        currGenerator.isLightOn = false;
                         currGenerator.lightOff();
                         teRender.renderFrame(backWorld, GUI);
-                        preKeyPress = null;
                         System.out.println("KEYB INPUT "+currKey + "  LightsOff!");
-                        lightOn = false;
                     } else {
                         currGenerator.lightOn();
                         teRender.renderFrame(backWorld, GUI);
                         preKeyPress = 'l';
                         System.out.println("KEYB INPUT "+currKey + "  LightsOn!");
-                        lightOn = true;
+                        currGenerator.isLightOn = true;
                     }
                 }
             }
+            if(currKey != 'l' && currKey != 'o') { // if user inputs wasd
+                currGenerator.updateUserPosition();
+                currGenerator.drawRooms();
+//                if(currGenerator.isLightOn) {
+//                    currGenerator.lightOn();
+//                }
+                teRender.renderFrame(backWorld, GUI);
+            }
+
         }
 
     }

@@ -21,6 +21,7 @@ public class RoomGenerator implements Serializable {
     public int[][] board = new int[Engine.WIDTH][Engine.HEIGHT];
     public TETile[][] world;
     public TETile userAppearance = Tileset.AVATAR;
+    public boolean isLightOn = false;
     public static TETile[] appearanceBindings = {Tileset.AVATAR, Tileset.MOUNTAIN, Tileset.WATER};
     private Map<Integer, Room> roomMap;
 
@@ -92,6 +93,9 @@ public class RoomGenerator implements Serializable {
                     world[i][j] = Tileset.FLOOR;
                 }
             }
+        }
+        if(isLightOn) {
+            lightOn();
         }
         world[playerX][playerY] = userAppearance;
     }
