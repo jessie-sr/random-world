@@ -193,11 +193,9 @@ public class Engine implements Serializable {
                 else {
                     teRender.initialize(WIDTH, HEIGHT);
                     File prevGenerator = new File(savedWorlds,"prevWorld.txt");
-                    currGenerator = persistenceUtils.readObject(prevGenerator,RoomGenerator.class);
-                    backWorld = currGenerator.world;
-                    currGenerator.generateRooms();
-                    currGenerator.connectRooms();
-                    currGenerator.drawRooms(); // call generateRooms() and connect() first;
+                    this.currGenerator = persistenceUtils.readObject(prevGenerator,RoomGenerator.class);
+                    this.backWorld = currGenerator.world;
+                    this.currGenerator.drawRooms(); // call generateRooms() and connect() first;
                     teRender.renderFrame(backWorld);
                     return input;
                 }
