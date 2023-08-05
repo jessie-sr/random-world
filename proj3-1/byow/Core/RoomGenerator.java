@@ -81,6 +81,7 @@ public class RoomGenerator implements Serializable {
             for (int j = 0; j < board[0].length; j++) {
                 if (board[i][j] == 1) {
                     if (i > 0 && i < board.length - 1 && j > 0 && j < board[0].length - 1 && changeWall(i, j)) {
+                        board[i][j] = 2;
                         world[i][j] = Tileset.FLOOR;
                     } else {
                         world[i][j] = Tileset.WALL;
