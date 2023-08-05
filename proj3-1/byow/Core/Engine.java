@@ -26,7 +26,7 @@ public class Engine implements Serializable {
     private TETile[] GUI;
     private int prevMouseX;
     private int prevMouseY;
-    private Character preKeyPress;
+    private Character preKeyPress = 'w';
     private static String[] boardToWorldMap = {"outside","wall","grass"};
     private static int GUINUM = 4;
     private File savedWorlds = new File("./savedWorld");
