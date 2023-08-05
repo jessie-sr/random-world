@@ -3,9 +3,10 @@ package byow.Core;
 import byow.TileEngine.TETile;
 import byow.TileEngine.Tileset;
 
+import java.io.Serializable;
 import java.util.*;
 
-public class RoomGenerator {
+public class RoomGenerator implements Serializable {
     private Random random;
     private int numRooms;
     private int minWidth;

@@ -3,7 +3,9 @@ package byow.Core;
 import byow.TileEngine.TETile;
 import byow.TileEngine.Tileset;
 
-public class Room {
+import java.io.Serializable;
+
+public class Room implements Serializable {
 
     private int id;
     private int width;
