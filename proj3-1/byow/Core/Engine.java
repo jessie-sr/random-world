@@ -24,6 +24,7 @@ public class Engine {
     private TETile GUI;
     private int prevMouseX;
     private int prevMouseY;
+    private Character preKeyPress;
     String[] boardToWorldMap = {"outside","wall","grass"};
     
     public Engine() {
@@ -69,7 +70,8 @@ public class Engine {
                         currGenerator.updateUserPosition();
                         currGenerator.drawRooms();
                         teRender.renderFrame(backWorld, GUI);
-                        System.out.println("KEYB MOVED" + currKey);
+                        System.out.println("KEYB MOVED " + currKey);
+                        preKeyPress = 'w';
                     }
                 }
                 case 'a' -> {
@@ -80,7 +82,8 @@ public class Engine {
                         currGenerator.updateUserPosition();
                         currGenerator.drawRooms();
                         teRender.renderFrame(backWorld, GUI);
-                        System.out.println("KEYB MOVED" + currKey);
+                        System.out.println("KEYB MOVED " + currKey);
+                        preKeyPress = 'a';
                     }
                 }
                 case 's' -> {
@@ -91,7 +94,8 @@ public class Engine {
                         currGenerator.updateUserPosition();
                         currGenerator.drawRooms();
                         teRender.renderFrame(backWorld, GUI);
-                        System.out.println("KEYB MOVED" +currKey);
+                        System.out.println("KEYB MOVED " +currKey);
+                        preKeyPress = 's';
                     }
                 }
                 case 'd' -> {
@@ -102,8 +106,20 @@ public class Engine {
                         currGenerator.updateUserPosition();
                         currGenerator.drawRooms();
                         teRender.renderFrame(backWorld, GUI);
-                        System.out.println("KEYB MOVED"+currKey);
+                        System.out.println("KEYB MOVED "+currKey);
+                        preKeyPress = 'd';
                     }
+                }
+                case ':' -> {
+                    preKeyPress = ':';
+                }
+                case 'q' -> {
+                    if(preKeyPress != ':') {
+                        return;
+                    }
+                    //save the world
+
+
                 }
             }
         }
