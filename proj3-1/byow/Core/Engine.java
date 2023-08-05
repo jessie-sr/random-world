@@ -38,7 +38,10 @@ public class Engine {
     public void interactWithKeyboard() {
         // display init UI first
         //process user's init input
-        keyboardInit();
+        String initialInput = keyboardInit();
+        if(initialInput.equals("q") || initialInput.equals("Q")) {
+            return;
+        }
         this.prevMouseX = (int) StdDraw.mouseX();
         this.prevMouseY = (int) StdDraw.mouseY();
 
@@ -124,13 +127,13 @@ public class Engine {
         }
     }
 
-    private void keyboardInit() {
+    private String keyboardInit() {
         // display init UI first
         drawFrame();
         //process user's init input
         String input = solicitNCharsInput(1);
         if(input.equals("q") || input.equals("Q")) {
-            return;
+            return input;
         }
         if(input.equals("n") || input.equals("N")) {
             this.seed =  RandomUtils.uniform(new Random(),Integer.MAX_VALUE);
@@ -152,8 +155,9 @@ public class Engine {
         }
         if(input.equals("l") || input.equals("L")) {
             // load files
-        }
 
+        }
+        return input;
     }
 
 
