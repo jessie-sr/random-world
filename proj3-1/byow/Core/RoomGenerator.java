@@ -17,6 +17,8 @@ public class RoomGenerator implements Serializable {
     public int playerY;
     public int[][] board = new int[Engine.WIDTH][Engine.HEIGHT];
     public TETile[][] world;
+    public TETile userAppearance = Tileset.AVATAR;
+    public static TETile[] appearanceBindings = {Tileset.AVATAR, Tileset.MOUNTAIN, Tileset.WATER};
 
     private Map<Integer, Room> roomMap;
 
@@ -35,6 +37,10 @@ public class RoomGenerator implements Serializable {
 
     public void updateUserPosition() {
         world[playerX][playerY] = Tileset.AVATAR;
+    }
+
+    public void changeUserAppearance(int option) {
+        userAppearance = appearanceBindings[option];
     }
 
     public RoomGenerator(TETile[][] world, long seed) {
@@ -84,7 +90,7 @@ public class RoomGenerator implements Serializable {
                 }
             }
         }
-        world[playerX][playerY] = Tileset.AVATAR;
+        world[playerX][playerY] = userAppearance;
     }
 
     public boolean changeWall(int i, int j) {

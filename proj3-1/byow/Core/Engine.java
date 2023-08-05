@@ -2,7 +2,6 @@ package byow.Core;
 
 import byow.TileEngine.TERenderer;
 import byow.TileEngine.TETile;
-import byow.TileEngine.Tileset;
 
 import byow.byowTools.RandomUtils;
 import edu.princeton.cs.algs4.StdDraw;
@@ -27,7 +26,7 @@ public class Engine implements Serializable {
     private int prevMouseX;
     private int prevMouseY;
     private Character preKeyPress;
-    private String[] boardToWorldMap = {"outside","wall","grass"};
+    private static String[] boardToWorldMap = {"outside","wall","grass"};
     private File savedWorlds = new File("./savedWorld");
     
     public Engine() {
@@ -55,8 +54,6 @@ public class Engine implements Serializable {
             checkKeyBoard();
 
         }
-
-
 
     }
 
@@ -123,7 +120,13 @@ public class Engine implements Serializable {
                     //save the world
                     setupFiles();
                     saveTheWorld();
+                    System.out.println("KEYB MOVED "+currKey);
                     gameOver = true;
+                }
+                case 'o' -> {
+                    createNewWorld("0");
+                    preKeyPress = 'o';
+                    System.out.println("KEYB INPUT "+currKey + "  NewWorldCreated!");
 
                 }
             }
@@ -163,27 +166,16 @@ public class Engine implements Serializable {
     private String keyboardInit() {
         // display init UI first
         //process user's init input
+        String inputHistory = "";
         while (true) {
             drawFrame();
             String input = solicitNCharsInput(1);
             if(input.equals("q") || input.equals("Q")) {
-                return input;
+                return inputHistory;
             }
             if(input.equals("n") || input.equals("N")) {
-                this.seed =  RandomUtils.uniform(new Random(),Integer.MAX_VALUE);
-                // initialize the tile rendering engine with a window of size WIDTH x HEIGHT
-                teRender.initialize(WIDTH, HEIGHT);
-                currGenerator = new RoomGenerator(seed);
-                backWorld = currGenerator.world;
-                // call generateRooms() and connect() first;
-                currGenerator.generateRooms();
-                currGenerator.connectRooms();
-                //update user-position info
-                currGenerator.initUserPosition();
-                currGenerator.drawRooms();
-                // draws the world to the screen.
-                teRender.renderFrame(backWorld);
-                return input;
+                createNewWorld(inputHistory);
+                return inputHistory;
             }
             if(input.equals("l") || input.equals("L")) {
                 //load files
@@ -191,18 +183,46 @@ public class Engine implements Serializable {
                     System.out.println("no saved world, try create a new one pressing n");
                 }
                 else {
-                    teRender.initialize(WIDTH, HEIGHT);
-                    File prevGenerator = new File(savedWorlds,"prevWorld.txt");
-                    this.currGenerator = persistenceUtils.readObject(prevGenerator,RoomGenerator.class);
-                    this.backWorld = currGenerator.world;
-                    this.currGenerator.drawRooms(); // call generateRooms() and connect() first;
-                    teRender.renderFrame(backWorld);
-                    return input;
+                    resumePrevWorld();
+                    return inputHistory;
                 }
+            }
+            if(input.equals("0") || input.equals("1") || input.equals("2")) {
+                inputHistory += input;
+
             }
         }
 
 
+    }
+
+    private void resumePrevWorld() {
+        teRender.initialize(WIDTH, HEIGHT);
+        File prevGenerator = new File(savedWorlds,"prevWorld.txt");
+        this.currGenerator = persistenceUtils.readObject(prevGenerator,RoomGenerator.class);
+        this.backWorld = currGenerator.world;
+        this.currGenerator.drawRooms(); // call generateRooms() and connect() first;
+        teRender.renderFrame(backWorld);
+    }
+
+    private void createNewWorld(String inputHistory) {
+        this.seed =  RandomUtils.uniform(new Random(),Integer.MAX_VALUE);
+        // initialize the tile rendering engine with a window of size WIDTH x HEIGHT
+        teRender.initialize(WIDTH, HEIGHT);
+        currGenerator = new RoomGenerator(seed);
+        backWorld = currGenerator.world;
+        // call generateRooms() and connect() first;
+        currGenerator.generateRooms();
+        currGenerator.connectRooms();
+        //update user-position info
+        currGenerator.initUserPosition();
+        if(!inputHistory.isEmpty()) {
+            Character appearanceIndex = inputHistory.charAt(inputHistory.length() - 1);
+            currGenerator.changeUserAppearance(Integer.parseInt(String.valueOf(appearanceIndex)));
+        }
+        currGenerator.drawRooms();
+        // draws the world to the screen.
+        teRender.renderFrame(backWorld);
     }
 
 
