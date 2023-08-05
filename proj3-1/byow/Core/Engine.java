@@ -26,7 +26,7 @@ public class Engine implements Serializable {
     private int prevMouseX;
     private int prevMouseY;
     private Character preKeyPress;
-    private static String[] boardToWorldMap = {"outside","wall","grass"};
+    private static String[] boardToWorldMap = {"outside","wall","floor"};
     private static int GUINUM = 4;
     private File savedWorlds = new File("./savedWorld");
     
@@ -118,7 +118,7 @@ public class Engine implements Serializable {
                     preKeyPress = ':';
                 }
                 case 'q' -> {
-                    if(preKeyPress != ':') {
+                    if(preKeyPress != null && preKeyPress != ':') {
                         return;
                     }
                     //save the world
@@ -132,6 +132,18 @@ public class Engine implements Serializable {
                     preKeyPress = 'o';
                     System.out.println("KEYB INPUT "+currKey + "  NewWorldCreated!");
 
+                }
+                case 'l' -> {
+                    if (preKeyPress != null && preKeyPress =='l') {
+                        //light off.
+                        currGenerator.lightOff();
+                        preKeyPress = null;
+                        System.out.println("KEYB INPUT "+currKey + "  LightsOff!");
+                    } else {
+                        currGenerator.lightOn();
+                        preKeyPress = 'l';
+                        System.out.println("KEYB INPUT "+currKey + "  LightsOn!");
+                    }
                 }
             }
         }

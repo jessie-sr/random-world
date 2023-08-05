@@ -3,6 +3,7 @@ package byow.Core;
 import byow.TileEngine.TETile;
 import byow.TileEngine.Tileset;
 
+import java.awt.*;
 import java.io.Serializable;
 import java.util.*;
 
@@ -15,11 +16,12 @@ public class RoomGenerator implements Serializable {
     private int maxHeight;
     public int playerX;
     public int playerY;
+    public Room closestRoom;
+
     public int[][] board = new int[Engine.WIDTH][Engine.HEIGHT];
     public TETile[][] world;
     public TETile userAppearance = Tileset.AVATAR;
     public static TETile[] appearanceBindings = {Tileset.AVATAR, Tileset.MOUNTAIN, Tileset.WATER};
-
     private Map<Integer, Room> roomMap;
 
     public void initUserPosition() {
@@ -219,5 +221,42 @@ public class RoomGenerator implements Serializable {
                 }
             }
         }
+    }
+
+    public void lightOn() {
+//        for (Room r: roomMap.values()) {
+//            r.addLight(board);
+//            if (r.getLight() != null) {
+//                r.getLight().On();
+//            }
+//        }
+//        world[playerX][playerY] = userAppearance;
+
+        for (Room r: roomMap.values()) {
+            int x = r.getX() + r.getWidth() / 2;
+            int y = r.getY() + r.getHeight() / 2;
+            if (board[x][y] == 2) {
+                world[x][y] = Tileset.LIGHT;
+                for (int a = Math.max(x - 3, 0); a < Math.min(x + 4, Engine.WIDTH); a++) {
+                    for (int b = Math.max(y - 3, 0); b < Math.min(y + 4, Engine.HEIGHT); b++) {
+                        if (!(a == x && b == y) && board[a][b] == 2) {
+                            int darkness = Math.max(Math.abs(x - a), Math.abs(y - b));
+                            world[a][b] = new TETile('·', new Color(128, 192, 128), new Color(0, 0, 255 - 60 * darkness), "light");
+                        }
+                    }
+                }
+            }
+            world[playerX][playerY] = userAppearance;
+        }
+    }
+
+    public void lightOff() {
+//        for (Room r: roomMap.values()) {
+//            if (r.getLight() != null) {
+//                r.getLight().Off();
+//            }
+//        }
+//        world[playerX][playerY] = userAppearance;
+        drawRooms();
     }
 }
