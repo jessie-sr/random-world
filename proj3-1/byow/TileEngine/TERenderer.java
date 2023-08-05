@@ -101,7 +101,7 @@ public class TERenderer {
         StdDraw.show();
     }
 
-    public void renderFrame(TETile[][] world,TETile GUI ) {
+    public void renderFrame(TETile[][] world,TETile[] GUI ) {
         int numXTiles = world.length;
         int numYTiles = world[0].length;
         StdDraw.clear(new Color(0, 0, 0));
@@ -114,7 +114,8 @@ public class TERenderer {
                 world[x][y].draw(x + xOffset, y + yOffset);
             }
         }
-        GUI.drawString(width/2,height-1);
+        GUI[0].drawString(width/2,height-1);
+        GUI[1].drawString(width * 0.75,height-1);
 
 
         StdDraw.show();

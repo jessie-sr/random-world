@@ -22,16 +22,20 @@ public class Engine implements Serializable {
     private long seed;
     private RoomGenerator currGenerator;
     private TETile[][] backWorld;
-    private TETile GUI;
+    private TETile[] GUI;
     private int prevMouseX;
     private int prevMouseY;
     private Character preKeyPress;
     private static String[] boardToWorldMap = {"outside","wall","grass"};
+    private static int GUINUM = 4;
     private File savedWorlds = new File("./savedWorld");
     
     public Engine() {
-        this.GUI = new TETile('#',"Mouse initialized ",
-                new Color(216, 128, 128), Color.BLACK,"gui");
+        this.GUI = new TETile[GUINUM];
+        this.GUI[0] = new TETile('#',"Mouse initialized ",
+                new Color(216, 128, 128), Color.BLACK,"gui0");
+        this.GUI[1] = new TETile('#',"Press o to start new world ",
+                new Color(216, 128, 128), Color.BLACK,"gui1");
     }
     
 
@@ -156,7 +160,7 @@ public class Engine implements Serializable {
             this.prevMouseX = currMouseX;
             this.prevMouseY = currMouseY;
 //            System.out.println("MOUSE MOVED");
-            GUI = new TETile('#',"Your mouse is at  " + boardToWorldMap[mousePointer],
+            GUI[0] = new TETile('#',"Your mouse is at  " + boardToWorldMap[mousePointer],
                     new Color(216, 128, 128), Color.BLACK,"gui");
             teRender.renderFrame(currGenerator.world,GUI);
 //            StdDraw.pause(500);
@@ -286,6 +290,9 @@ public class Engine implements Serializable {
         StdDraw.text(WIDTH / 2, HEIGHT /2, "new game (N)");
         StdDraw.text(WIDTH / 2, HEIGHT /2 + 2, "load game (L)");
         StdDraw.text(WIDTH / 2, HEIGHT /2 + 4, "quit game (Q)");
+        StdDraw.text(WIDTH / 2, HEIGHT /3, "First, choose your appearance using digits 0,1,2");
+        StdDraw.text(WIDTH / 2, HEIGHT /3 - 2, "Then press Q or L or N");
+        StdDraw.text(WIDTH / 2, HEIGHT /3 - 4, "0:default avatar;  1:mountain avatar;  2:water avatar");
         StdDraw.show();
     }
 
