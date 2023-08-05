@@ -47,9 +47,6 @@ public class Engine {
             checkKeyBoard();
 
         }
-
-
-
     }
 
     private void checkKeyBoard() {
@@ -138,8 +135,6 @@ public class Engine {
             // initialize the tile rendering engine with a window of size WIDTH x HEIGHT
             teRender.initialize(WIDTH, HEIGHT);
             // initialize tiles
-
-
             currGenerator = new RoomGenerator(seed);
             backWorld = currGenerator.world;
             currGenerator.generateRooms();
@@ -153,7 +148,6 @@ public class Engine {
         if(input.equals("l") || input.equals("L")) {
             // load files
         }
-
     }
 
 
