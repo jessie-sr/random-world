@@ -374,7 +374,7 @@ public class Engine implements Serializable {
         Font fontSmall = new Font("Monaco", Font.BOLD, 20);
         StdDraw.setFont(fontSmall);
         StdDraw.text(WIDTH / 2, HEIGHT / 2 + 2, "Default Slot: Press 0 to load;  Status: " + promt1);
-        StdDraw.text(WIDTH / 2, HEIGHT / 2 - 2, "Redundant Slot: Press 1 to load;  Status: " + promt2);
+        StdDraw.text(WIDTH / 2, HEIGHT / 2 - 2, "Additional Slot: Press 1 to load;  Status: " + promt2);
         StdDraw.text(WIDTH / 2, HEIGHT * 0.2, "Press Q to return to previous frame");
         StdDraw.show();
 
