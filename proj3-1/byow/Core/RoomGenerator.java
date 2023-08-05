@@ -3,9 +3,10 @@ package byow.Core;
 import byow.TileEngine.TETile;
 import byow.TileEngine.Tileset;
 
+import java.io.Serializable;
 import java.util.*;
 
-public class RoomGenerator {
+public class RoomGenerator implements Serializable {
     private Random random;
     private int numRooms;
     private int minWidth;
@@ -16,6 +17,8 @@ public class RoomGenerator {
     public int playerY;
     public int[][] board = new int[Engine.WIDTH][Engine.HEIGHT];
     public TETile[][] world;
+    public TETile userAppearance = Tileset.AVATAR;
+    public static TETile[] appearanceBindings = {Tileset.AVATAR, Tileset.MOUNTAIN, Tileset.WATER};
 
     private Map<Integer, Room> roomMap;
 
@@ -34,6 +37,10 @@ public class RoomGenerator {
 
     public void updateUserPosition() {
         world[playerX][playerY] = Tileset.AVATAR;
+    }
+
+    public void changeUserAppearance(int option) {
+        userAppearance = appearanceBindings[option];
     }
 
     public RoomGenerator(TETile[][] world, long seed) {
@@ -83,7 +90,7 @@ public class RoomGenerator {
                 }
             }
         }
-        world[playerX][playerY] = Tileset.AVATAR;
+        world[playerX][playerY] = userAppearance;
     }
 
     public boolean changeWall(int i, int j) {

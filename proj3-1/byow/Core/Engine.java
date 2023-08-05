@@ -2,16 +2,17 @@ package byow.Core;
 
 import byow.TileEngine.TERenderer;
 import byow.TileEngine.TETile;
-import byow.TileEngine.Tileset;
 
 import byow.byowTools.RandomUtils;
 import edu.princeton.cs.algs4.StdDraw;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.io.File;
+import java.io.Serializable;
 import java.util.Random;
 
-public class Engine {
+public class Engine implements Serializable {
     TERenderer teRender = new TERenderer();
     /* Feel free to change the WIDTH and HEIGHT. */
     public static final int WIDTH = 80;
@@ -24,6 +25,9 @@ public class Engine {
     private TETile GUI;
     private int prevMouseX;
     private int prevMouseY;
+    private Character preKeyPress;
+    private static String[] boardToWorldMap = {"outside","wall","grass"};
+    private File savedWorlds = new File("./savedWorld");
     
     public Engine() {
         this.GUI = new TETile('#',"Mouse initialized ",
@@ -38,7 +42,10 @@ public class Engine {
     public void interactWithKeyboard() {
         // display init UI first
         //process user's init input
-        keyboardInit();
+        String initialInput = keyboardInit();
+        if(initialInput.equals("q") || initialInput.equals("Q")) {
+            return;
+        }
         this.prevMouseX = (int) StdDraw.mouseX();
         this.prevMouseY = (int) StdDraw.mouseY();
 
@@ -47,6 +54,7 @@ public class Engine {
             checkKeyBoard();
 
         }
+
     }
 
     private void checkKeyBoard() {
@@ -62,7 +70,8 @@ public class Engine {
                         currGenerator.updateUserPosition();
                         currGenerator.drawRooms();
                         teRender.renderFrame(backWorld, GUI);
-                        System.out.println("KEYB MOVED" + currKey);
+                        System.out.println("KEYB MOVED " + currKey);
+                        preKeyPress = 'w';
                     }
                 }
                 case 'a' -> {
@@ -73,7 +82,8 @@ public class Engine {
                         currGenerator.updateUserPosition();
                         currGenerator.drawRooms();
                         teRender.renderFrame(backWorld, GUI);
-                        System.out.println("KEYB MOVED" + currKey);
+                        System.out.println("KEYB MOVED " + currKey);
+                        preKeyPress = 'a';
                     }
                 }
                 case 's' -> {
@@ -84,7 +94,8 @@ public class Engine {
                         currGenerator.updateUserPosition();
                         currGenerator.drawRooms();
                         teRender.renderFrame(backWorld, GUI);
-                        System.out.println("KEYB MOVED" +currKey);
+                        System.out.println("KEYB MOVED " +currKey);
+                        preKeyPress = 's';
                     }
                 }
                 case 'd' -> {
@@ -95,12 +106,43 @@ public class Engine {
                         currGenerator.updateUserPosition();
                         currGenerator.drawRooms();
                         teRender.renderFrame(backWorld, GUI);
-                        System.out.println("KEYB MOVED"+currKey);
+                        System.out.println("KEYB MOVED "+currKey);
+                        preKeyPress = 'd';
                     }
+                }
+                case ':' -> {
+                    preKeyPress = ':';
+                }
+                case 'q' -> {
+                    if(preKeyPress != ':') {
+                        return;
+                    }
+                    //save the world
+                    setupFiles();
+                    saveTheWorld();
+                    System.out.println("KEYB MOVED "+currKey);
+                    gameOver = true;
+                }
+                case 'o' -> {
+                    createNewWorld("0");
+                    preKeyPress = 'o';
+                    System.out.println("KEYB INPUT "+currKey + "  NewWorldCreated!");
+
                 }
             }
         }
 
+    }
+
+    private void saveTheWorld() {
+        File prevWorld = new File(savedWorlds,"prevWorld.txt");
+        persistenceUtils.writeObject(prevWorld,currGenerator);
+    }
+
+    private void setupFiles() {
+        if(!savedWorlds.exists()) {
+            savedWorlds.mkdir();
+        }
     }
 
     public void checkMouse(int prevMouseX,int prevMouseY) {
@@ -114,40 +156,73 @@ public class Engine {
             this.prevMouseX = currMouseX;
             this.prevMouseY = currMouseY;
 //            System.out.println("MOUSE MOVED");
-            GUI = new TETile('#',"Your mouse is at  " + mousePointer,
+            GUI = new TETile('#',"Your mouse is at  " + boardToWorldMap[mousePointer],
                     new Color(216, 128, 128), Color.BLACK,"gui");
             teRender.renderFrame(currGenerator.world,GUI);
 //            StdDraw.pause(500);
         }
     }
 
-    private void keyboardInit() {
+    private String keyboardInit() {
         // display init UI first
-        drawFrame();
         //process user's init input
-        String input = solicitNCharsInput(1);
-        if(input.equals("q") || input.equals("Q")) {
-            return;
-        }
-        if(input.equals("n") || input.equals("N")) {
-            this.seed =  RandomUtils.uniform(new Random(),Integer.MAX_VALUE);
+        String inputHistory = "";
+        while (true) {
+            drawFrame();
+            String input = solicitNCharsInput(1);
+            if(input.equals("q") || input.equals("Q")) {
+                return inputHistory;
+            }
+            if(input.equals("n") || input.equals("N")) {
+                createNewWorld(inputHistory);
+                return inputHistory;
+            }
+            if(input.equals("l") || input.equals("L")) {
+                //load files
+                if(!savedWorlds.exists()) {
+                    System.out.println("no saved world, try create a new one pressing n");
+                }
+                else {
+                    resumePrevWorld();
+                    return inputHistory;
+                }
+            }
+            if(input.equals("0") || input.equals("1") || input.equals("2")) {
+                inputHistory += input;
 
-            // initialize the tile rendering engine with a window of size WIDTH x HEIGHT
-            teRender.initialize(WIDTH, HEIGHT);
-            // initialize tiles
-            currGenerator = new RoomGenerator(seed);
-            backWorld = currGenerator.world;
-            currGenerator.generateRooms();
-            currGenerator.connectRooms();
-            currGenerator.initUserPosition(); //update user-position info
-            currGenerator.drawRooms(); // call generateRooms() and connect() first;
+            }
+        }
 
-            // draws the world to the screen.
-            teRender.renderFrame(backWorld);
+
+    }
+
+    private void resumePrevWorld() {
+        teRender.initialize(WIDTH, HEIGHT);
+        File prevGenerator = new File(savedWorlds,"prevWorld.txt");
+        this.currGenerator = persistenceUtils.readObject(prevGenerator,RoomGenerator.class);
+        this.backWorld = currGenerator.world;
+        this.currGenerator.drawRooms(); // call generateRooms() and connect() first;
+        teRender.renderFrame(backWorld);
+    }
+
+    private void createNewWorld(String inputHistory) {
+        this.seed =  RandomUtils.uniform(new Random(),Integer.MAX_VALUE);
+        // initialize the tile rendering engine with a window of size WIDTH x HEIGHT
+        teRender.initialize(WIDTH, HEIGHT);
+        currGenerator = new RoomGenerator(seed);
+        backWorld = currGenerator.world;
+        // call generateRooms() and connect() first;
+        currGenerator.generateRooms();
+        currGenerator.connectRooms();
+        //update user-position info
+        currGenerator.initUserPosition();
+        if(!inputHistory.isEmpty()) {
+            Character appearanceIndex = inputHistory.charAt(inputHistory.length() - 1);
+            currGenerator.changeUserAppearance(Integer.parseInt(String.valueOf(appearanceIndex)));
         }
-        if(input.equals("l") || input.equals("L")) {
-            // load files
-        }
+        currGenerator.drawRooms();
+        // draws the world to the screen.
+        teRender.renderFrame(backWorld);
     }
 
 
