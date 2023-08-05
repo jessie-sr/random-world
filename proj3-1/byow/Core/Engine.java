@@ -27,6 +27,7 @@ public class Engine implements Serializable {
     private int prevMouseX;
     private int prevMouseY;
     private Character preKeyPress = 'w';
+    private boolean lightOn = false;
     private static String[] boardToWorldMap = {"outside","wall","floor"};
     private static int GUINUM = 4;
     private File savedWorlds = new File("./savedWorld");
@@ -147,15 +148,19 @@ public class Engine implements Serializable {
 
                 }
                 case 'l' -> {
-                    if (preKeyPress != null && preKeyPress =='l') {
+                    if (lightOn) {
                         //light off.
                         currGenerator.lightOff();
+                        teRender.renderFrame(backWorld, GUI);
                         preKeyPress = null;
                         System.out.println("KEYB INPUT "+currKey + "  LightsOff!");
+                        lightOn = false;
                     } else {
                         currGenerator.lightOn();
+                        teRender.renderFrame(backWorld, GUI);
                         preKeyPress = 'l';
                         System.out.println("KEYB INPUT "+currKey + "  LightsOn!");
+                        lightOn = true;
                     }
                 }
             }
