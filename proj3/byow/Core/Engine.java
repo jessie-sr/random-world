@@ -203,7 +203,7 @@ public class Engine implements Serializable {
                     setupFiles();
                     saveTheWorld();
                     System.out.println("KEYB MOVED " + currKey);
-//                    gameOver = true;
+                    gameOver = true;
                 }
                 case 'e' -> {
                     if (preKeyPress != ':') {
@@ -222,20 +222,19 @@ public class Engine implements Serializable {
 
                 }
                 case 'l' -> {
-//                    if (currGenerator.isLightOn) {
-//                        //light off.
-//                        currGenerator.isLightOn = false;
-//                        currGenerator.lightOff();
-//                        teRender.renderFrame(backWorld, GUI);
-//                        System.out.println("KEYB INPUT " + currKey + "  LightsOff!");
-//                    } else {
-//                        currGenerator.lightOn();
-//                        teRender.renderFrame(backWorld, GUI);
-//                        preKeyPress = 'l';
-//                        System.out.println("KEYB INPUT " + currKey + "  LightsOn!");
-//                        currGenerator.isLightOn = true;
-//                    }
-                    resumePrevWorld(false);
+                    if (currGenerator.isLightOn) {
+                        //light off.
+                        currGenerator.isLightOn = false;
+                        currGenerator.lightOff();
+                        teRender.renderFrame(backWorld, GUI);
+                        System.out.println("KEYB INPUT " + currKey + "  LightsOff!");
+                    } else {
+                        currGenerator.lightOn();
+                        teRender.renderFrame(backWorld, GUI);
+                        preKeyPress = 'l';
+                        System.out.println("KEYB INPUT " + currKey + "  LightsOn!");
+                        currGenerator.isLightOn = true;
+                    }
                 }
             }
             if (currKey != 'l' && currKey != 'o') { // if user inputs wasd
@@ -440,15 +439,15 @@ public class Engine implements Serializable {
 //            }
         }
 //
-        teRender.renderFrame(backWorld,GUI);
-        this.prevMouseX = (int) StdDraw.mouseX();
-        this.prevMouseY = (int) StdDraw.mouseY();
-
-        while(!gameOver) {
-            checkMouse(prevMouseX,prevMouseY);
-            checkKeyBoard("");
-
-        }
+//        teRender.renderFrame(backWorld,GUI);
+//        this.prevMouseX = (int) StdDraw.mouseX();
+//        this.prevMouseY = (int) StdDraw.mouseY();
+//
+//        while(!gameOver) {
+//            checkMouse(prevMouseX,prevMouseY);
+//            checkKeyBoard("");
+//
+//        }
 
         // Get the final world frame after all commands are processed TO the Autograder!!!
         return backWorld;
