@@ -131,9 +131,7 @@ public class DrawFrame {
         StdDraw.text(WIDTH / 2, HEIGHT /2 + 2, "load game (L)");
         StdDraw.text(WIDTH / 2, HEIGHT /2, "quit game (Q)");
         StdDraw.text(WIDTH / 2, HEIGHT /2 - 2, "check save slots (R)");
-//        StdDraw.text(WIDTH / 2, HEIGHT /3, "First, choose your appearance using digits 0,1,2");
         StdDraw.text(WIDTH / 2, HEIGHT /2 - 4, "choose appearance (S)");
-//        StdDraw.text(WIDTH / 2, HEIGHT /3 - 4, "0:default avatar;  1:mountain avatar;  2:water avatar");
         StdDraw.show();
     }
 
