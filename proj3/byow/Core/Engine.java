@@ -28,7 +28,7 @@ public class Engine implements Serializable {
     private int prevMouseX;
     private int prevMouseY;
     private Character preKeyPress = 'w';
-    private File savedWorlds = new File("./savedWorld");
+    private File savedWorlds = new File("./savedWorld.txt");
     private File savedWorlds2 = new File("./savedWorld2");
 
 
@@ -248,8 +248,8 @@ public class Engine implements Serializable {
     }
 
     private void saveTheWorld() {
-        File prevWorld = new File(savedWorlds, "prevWorld.txt");
-        persistenceUtils.writeObject(prevWorld, currGenerator);
+//        File prevWorld = new File(savedWorlds, "prevWorld.txt");
+        persistenceUtils.writeObject(savedWorlds, currGenerator);
     }
 
     private void saveTheWorld2() {
@@ -262,7 +262,7 @@ public class Engine implements Serializable {
 //        if(!savedWorlds.exists()) {
 //            savedWorlds.mkdir();
 //        }
-        savedWorlds.mkdir();
+//        savedWorlds.mkdir();
     }
 
     private void setupFiles2() {
@@ -291,12 +291,12 @@ public class Engine implements Serializable {
 
     private void resumePrevWorld(boolean keyBoardStart) {
         teRender.initialize(WIDTH, HEIGHT);
-        File prevGenerator = new File(savedWorlds, "prevWorld.txt");
-        if (!prevGenerator.exists()) {
-            createNewWorld("0", "", keyBoardStart);
-            return;
-        }
-        this.currGenerator = persistenceUtils.readObject(prevGenerator, RoomGenerator.class);
+//        File prevGenerator = new File(savedWorlds, "prevWorld.txt");
+//        if (!prevGenerator.exists()) {
+//            createNewWorld("0", "", keyBoardStart);
+//            return;
+//        }
+        this.currGenerator = persistenceUtils.readObject(savedWorlds, RoomGenerator.class);
         this.backWorld = currGenerator.world;
         this.currGenerator.drawRooms(); // call generateRooms() and connect() first;
         if (keyBoardStart) {
