@@ -423,7 +423,7 @@ public class Engine implements Serializable {
 //        }
 
         // Process the remaining characters in the input string
-        for (int i = 1; i < input.length(); i++) {
+        for (int i = 0; i < input.length(); i++) {
             char command = input.charAt(i);
             checkKeyBoard(String.valueOf(command));
 //            if (command == ':') {
@@ -440,15 +440,15 @@ public class Engine implements Serializable {
 //            }
         }
 //
-//        teRender.renderFrame(backWorld,GUI);
-//        this.prevMouseX = (int) StdDraw.mouseX();
-//        this.prevMouseY = (int) StdDraw.mouseY();
-//
-//        while(!gameOver) {
-//            checkMouse(prevMouseX,prevMouseY);
-//            checkKeyBoard("");
-//
-//        }
+        teRender.renderFrame(backWorld,GUI);
+        this.prevMouseX = (int) StdDraw.mouseX();
+        this.prevMouseY = (int) StdDraw.mouseY();
+
+        while(!gameOver) {
+            checkMouse(prevMouseX,prevMouseY);
+            checkKeyBoard("");
+
+        }
 
         // Get the final world frame after all commands are processed TO the Autograder!!!
         return backWorld;
