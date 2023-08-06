@@ -14,12 +14,13 @@ import java.util.Locale;
 import java.util.Random;
 
 public class Engine implements Serializable {
-    TERenderer teRender = new TERenderer();
     /* Feel free to change the WIDTH and HEIGHT. */
     public static final int WIDTH = 80;
     public static final int HEIGHT = 30;
+    private static String[] boardToWorldMap = {"outside", "wall", "floor"};
+    private static int GUINUM = 4;
+    TERenderer teRender = new TERenderer();
     private boolean gameOver = false;
-
     private long seed;
     private RoomGenerator currGenerator;
     private TETile[][] backWorld;
@@ -27,20 +28,21 @@ public class Engine implements Serializable {
     private int prevMouseX;
     private int prevMouseY;
     private Character preKeyPress = 'w';
-    private static String[] boardToWorldMap = {"outside","wall","floor"};
-    private static int GUINUM = 4;
     private File savedWorlds = new File("./savedWorld");
     private File savedWorlds2 = new File("./savedWorld2");
 
-    
+
     public Engine() {
         this.GUI = new TETile[GUINUM];
-        this.GUI[0] = new TETile('#',"Mouse initialized ",
-                new Color(216, 128, 128), Color.BLACK,"gui0");
-        this.GUI[1] = new TETile('#',"Press o to start new world ",
-                new Color(216, 128, 128), Color.BLACK,"gui1");
+        this.GUI[0] = new TETile('#', "Mouse initialized ",
+                new Color(216, 128, 128), Color.BLACK, "gui0");
+        this.GUI[1] = new TETile('#', "Press o to start new world ",
+                new Color(216, 128, 128), Color.BLACK, "gui1");
     }
-    
+
+    public static void main(String[] args) {
+//        drawFrame();
+    }
 
     /**
      * Method used for exploring a fresh world. This method should handle all inputs,
@@ -53,13 +55,14 @@ public class Engine implements Serializable {
         this.prevMouseX = (int) StdDraw.mouseX();
         this.prevMouseY = (int) StdDraw.mouseY();
 
-        while(!gameOver) {
-            checkMouse(prevMouseX,prevMouseY);
+        while (!gameOver) {
+            checkMouse(prevMouseX, prevMouseY);
             checkKeyBoard("");
 
         }
 
     }
+
     private String keyboardInit() {
         // display init UI first
         //process user's init input
@@ -68,34 +71,34 @@ public class Engine implements Serializable {
             DrawFrame.drawFrame();
             String input = solicitNCharsInput(1);
             input = input.toLowerCase(Locale.ROOT);
-            if(input.equals("q") || input.equals("Q")) {
+            if (input.equals("q") || input.equals("Q")) {
                 System.exit(0);
                 return inputHistory;
             }
-            if(input.equals("n") || input.equals("N")) {
+            if (input.equals("n") || input.equals("N")) {
                 DrawFrame.drawInputStringToFrame("");
                 String inputSeed = solicitSeed();
-                createNewWorld(inputHistory,inputSeed,true);
+                createNewWorld(inputHistory, inputSeed, true);
                 return inputHistory;
             }
-            if(input.equals("l") || input.equals("L")) {
+            if (input.equals("l") || input.equals("L")) {
                 //load files
 //                if(!savedWorlds.exists()) {
 //                    System.out.println("no saved world, try create a new one pressing n");
 //                }
-                else {
-                    resumePrevWorld(true);
-                    return inputHistory;
-                }
+//                else {
+                resumePrevWorld(true);
+                return inputHistory;
+//                }
             }
-            if(input.equals("r")) {
+            if (input.equals("r")) {
                 // display a new sub-menu
                 DrawFrame.drawSavedSubFrame();
-                while(true) {
+                while (true) {
                     // wait for further input
                     String subInput = solicitNCharsInput(1);
                     subInput = subInput.toLowerCase();
-                    if(subInput.equals("q")) {
+                    if (subInput.equals("q")) {
                         break;
                     }
                     switch (subInput) {
@@ -119,17 +122,17 @@ public class Engine implements Serializable {
                 }
 
             }
-            if(input.equals("s")) {
+            if (input.equals("s")) {
                 // display a new sub-menu
                 DrawFrame.drawAppearanceSelection();
-                while(true) {
+                while (true) {
                     // wait for further input
                     String subInput = solicitNCharsInput(1);
                     subInput = subInput.toLowerCase();
-                    if(subInput.equals("q")) {
+                    if (subInput.equals("q")) {
                         break;
                     }
-                    if(subInput.equals("0") || subInput.equals("1") || subInput.equals("2")) {
+                    if (subInput.equals("0") || subInput.equals("1") || subInput.equals("2")) {
                         inputHistory += subInput;
                         break;
                     }
@@ -143,15 +146,13 @@ public class Engine implements Serializable {
 
     }
 
-
     private void checkKeyBoard(String ch) {
         //DONE: Read n letters of player input
-        if(StdDraw.hasNextKeyTyped() || !ch.isEmpty()) {
+        if (StdDraw.hasNextKeyTyped() || !ch.isEmpty()) {
             char currKey;
-            if(!ch.isEmpty()) {
+            if (!ch.isEmpty()) {
                 currKey = ch.charAt(0);
-            }
-            else {
+            } else {
                 currKey = StdDraw.nextKeyTyped();
             }
             switch (currKey) {
@@ -178,7 +179,7 @@ public class Engine implements Serializable {
                         return;
                     } else {
                         currGenerator.playerY -= 1;
-                        System.out.println("KEYB MOVED " +currKey);
+                        System.out.println("KEYB MOVED " + currKey);
                         preKeyPress = 's';
                     }
                 }
@@ -187,7 +188,7 @@ public class Engine implements Serializable {
                         return;
                     } else {
                         currGenerator.playerX += 1;
-                        System.out.println("KEYB MOVED "+currKey);
+                        System.out.println("KEYB MOVED " + currKey);
                         preKeyPress = 'd';
                     }
                 }
@@ -195,29 +196,29 @@ public class Engine implements Serializable {
                     preKeyPress = ':';
                 }
                 case 'q' -> {
-                    if(preKeyPress != ':') {
+                    if (preKeyPress != ':') {
                         return;
                     }
                     //save the world
                     setupFiles();
                     saveTheWorld();
-                    System.out.println("KEYB MOVED "+currKey);
+                    System.out.println("KEYB MOVED " + currKey);
                     gameOver = true;
                 }
                 case 'e' -> {
-                    if(preKeyPress != ':') {
+                    if (preKeyPress != ':') {
                         return;
                     }
                     //save the world2
                     setupFiles2();
                     saveTheWorld2();
-                    System.out.println("KEYB MOVED "+currKey);
+                    System.out.println("KEYB MOVED " + currKey);
                     gameOver = true;
                 }
                 case 'o' -> {
-                    createNewWorld("0","",true);
+                    createNewWorld("0", "", true);
                     preKeyPress = 'o';
-                    System.out.println("KEYB INPUT "+currKey + "  NewWorldCreated!");
+                    System.out.println("KEYB INPUT " + currKey + "  NewWorldCreated!");
 
                 }
                 case 'l' -> {
@@ -226,17 +227,17 @@ public class Engine implements Serializable {
                         currGenerator.isLightOn = false;
                         currGenerator.lightOff();
                         teRender.renderFrame(backWorld, GUI);
-                        System.out.println("KEYB INPUT "+currKey + "  LightsOff!");
+                        System.out.println("KEYB INPUT " + currKey + "  LightsOff!");
                     } else {
                         currGenerator.lightOn();
                         teRender.renderFrame(backWorld, GUI);
                         preKeyPress = 'l';
-                        System.out.println("KEYB INPUT "+currKey + "  LightsOn!");
+                        System.out.println("KEYB INPUT " + currKey + "  LightsOn!");
                         currGenerator.isLightOn = true;
                     }
                 }
             }
-            if(currKey != 'l' && currKey != 'o') { // if user inputs wasd
+            if (currKey != 'l' && currKey != 'o') { // if user inputs wasd
                 currGenerator.updateUserPosition();
                 currGenerator.drawRooms();
                 teRender.renderFrame(backWorld, GUI);
@@ -247,13 +248,15 @@ public class Engine implements Serializable {
     }
 
     private void saveTheWorld() {
-        File prevWorld = new File(savedWorlds,"prevWorld.txt");
-        persistenceUtils.writeObject(prevWorld,currGenerator);
+        File prevWorld = new File(savedWorlds, "prevWorld.txt");
+        persistenceUtils.writeObject(prevWorld, currGenerator);
     }
+
     private void saveTheWorld2() {
-        File prevWorld2 = new File(savedWorlds2,"prevWorld2.txt");
-        persistenceUtils.writeObject(prevWorld2,currGenerator);
+        File prevWorld2 = new File(savedWorlds2, "prevWorld2.txt");
+        persistenceUtils.writeObject(prevWorld2, currGenerator);
     }
+
     // tobedone!!!!!
     private void setupFiles() {
 //        if(!savedWorlds.exists()) {
@@ -261,67 +264,66 @@ public class Engine implements Serializable {
 //        }
         savedWorlds.mkdir();
     }
+
     private void setupFiles2() {
-        if(!savedWorlds2.exists()) {
+        if (!savedWorlds2.exists()) {
             savedWorlds2.mkdir();
         }
     }
 
-    public void checkMouse(int prevMouseX,int prevMouseY) {
+    public void checkMouse(int prevMouseX, int prevMouseY) {
         int currMouseX = (int) StdDraw.mouseX();
         int currMouseY = (int) StdDraw.mouseY();
-        if(currMouseY == HEIGHT) {
+        if (currMouseY == HEIGHT) {
             return;
         }
-        if(prevMouseX != currMouseX || prevMouseY != currMouseY) {
+        if (prevMouseX != currMouseX || prevMouseY != currMouseY) {
             int mousePointer = currGenerator.board[currMouseX][currMouseY];
             this.prevMouseX = currMouseX;
             this.prevMouseY = currMouseY;
 //            System.out.println("MOUSE MOVED");
-            GUI[0] = new TETile('#',"Your mouse is at  " + boardToWorldMap[mousePointer],
-                    new Color(216, 128, 128), Color.BLACK,"gui");
-            teRender.renderFrame(currGenerator.world,GUI);
+            GUI[0] = new TETile('#', "Your mouse is at  " + boardToWorldMap[mousePointer],
+                    new Color(216, 128, 128), Color.BLACK, "gui");
+            teRender.renderFrame(currGenerator.world, GUI);
 //            StdDraw.pause(500);
         }
     }
 
     private void resumePrevWorld(boolean keyBoardStart) {
         teRender.initialize(WIDTH, HEIGHT);
-        File prevGenerator = new File(savedWorlds,"prevWorld.txt");
-        if(!prevGenerator.exists()) {
-            createNewWorld("0","",keyBoardStart);
+        File prevGenerator = new File(savedWorlds, "prevWorld.txt");
+        if (!prevGenerator.exists()) {
+            createNewWorld("0", "", keyBoardStart);
             return;
         }
-        this.currGenerator = persistenceUtils.readObject(prevGenerator,RoomGenerator.class);
+        this.currGenerator = persistenceUtils.readObject(prevGenerator, RoomGenerator.class);
         this.backWorld = currGenerator.world;
         this.currGenerator.drawRooms(); // call generateRooms() and connect() first;
-        if(keyBoardStart) {
+        if (keyBoardStart) {
             teRender.renderFrame(backWorld);
         }
     }
 
     private void resumePrevWorld2(boolean keyBoardStart) {
         teRender.initialize(WIDTH, HEIGHT);
-        File prevGenerator = new File(savedWorlds2,"prevWorld2.txt");
-        if(!prevGenerator.exists()) {
-            createNewWorld("0","",keyBoardStart);
+        File prevGenerator = new File(savedWorlds2, "prevWorld2.txt");
+        if (!prevGenerator.exists()) {
+            createNewWorld("0", "", keyBoardStart);
             return;
         }
-        this.currGenerator = persistenceUtils.readObject(prevGenerator,RoomGenerator.class);
+        this.currGenerator = persistenceUtils.readObject(prevGenerator, RoomGenerator.class);
         this.backWorld = currGenerator.world;
         this.currGenerator.drawRooms(); // call generateRooms() and connect() first;
-        if(keyBoardStart) {
+        if (keyBoardStart) {
             teRender.renderFrame(backWorld);
         }
     }
 
-
-    private void createNewWorld(String inputHistory,String inputSeed,Boolean keyBoardStart) {
-        if(!inputSeed.isEmpty()) {
+    private void createNewWorld(String inputHistory, String inputSeed, Boolean keyBoardStart) {
+        if (!inputSeed.isEmpty()) {
             this.seed = Long.parseLong(inputSeed);
-        }
-        else {
-            this.seed =  RandomUtils.uniform(new Random(),Integer.MAX_VALUE);
+        } else {
+            this.seed = RandomUtils.uniform(new Random(), Integer.MAX_VALUE);
         }
         // initialize the tile rendering engine with a window of size WIDTH x HEIGHT
         teRender.initialize(WIDTH, HEIGHT);
@@ -332,24 +334,24 @@ public class Engine implements Serializable {
         currGenerator.connectRooms();
         //update user-position info
         currGenerator.initUserPosition();
-        if(!inputHistory.isEmpty()) {
+        if (!inputHistory.isEmpty()) {
             Character appearanceIndex = inputHistory.charAt(inputHistory.length() - 1);
             currGenerator.changeUserAppearance(Integer.parseInt(String.valueOf(appearanceIndex)));
         }
         currGenerator.drawRooms();
         // draws the world to the screen.
-        if(keyBoardStart) {
+        if (keyBoardStart) {
             teRender.renderFrame(backWorld);
         }
     }
 
     public String solicitSeed() {
         //DONE: Read n letters of player input
-        String ret="";
-        while(true) {
-            if(StdDraw.hasNextKeyTyped()) {
+        String ret = "";
+        while (true) {
+            if (StdDraw.hasNextKeyTyped()) {
                 char currKey = StdDraw.nextKeyTyped();
-                if(currKey == 's' || currKey == 'S') {
+                if (currKey == 's' || currKey == 'S') {
                     return ret;
                 }
                 ret += currKey;
@@ -360,10 +362,10 @@ public class Engine implements Serializable {
 
     public String solicitNCharsInput(int n) {
         //DONE: Read n letters of player input
-        int i=0;
-        String ret="";
-        while(i<n) {
-            if(StdDraw.hasNextKeyTyped()) {
+        int i = 0;
+        String ret = "";
+        while (i < n) {
+            if (StdDraw.hasNextKeyTyped()) {
                 char currKey = StdDraw.nextKeyTyped();
                 i++;
                 ret += currKey;
@@ -374,31 +376,23 @@ public class Engine implements Serializable {
         return ret;
     }
 
-    public static void main(String[] args) {
-//        drawFrame();
-    }
-
-
-
-
-
     /**
      * Method used for autograding and testing your code. The input string will be a series
      * of characters (for example, "n123sswwdasdassadwas", "n123sss:q", "lwww". The engine should
      * behave exactly as if the user typed these characters into the engine using
      * interactWithKeyboard.
-     *
+     * <p>
      * Recall that strings ending in ":q" should cause the game to quite save. For example,
      * if we do interactWithInputString("n123sss:q"), we expect the game to run the first
      * 7 commands (n123sss) and then quit and save. If we then do
      * interactWithInputString("l"), we should be back in the exact same state.
-     *
+     * <p>
      * In other words, running both of these:
-     *   - interactWithInputString("n123sss:q")
-     *   - interactWithInputString("lww")
-     *
+     * - interactWithInputString("n123sss:q")
+     * - interactWithInputString("lww")
+     * <p>
      * should yield the exact same world state as:
-     *   - interactWithInputString("n123sssww")
+     * - interactWithInputString("n123sssww")
      *
      * @param input the input string to feed to your program
      * @return the 2D TETile[][] representing the state of the world
@@ -417,10 +411,9 @@ public class Engine implements Serializable {
         if (input.charAt(0) == 'n') {
             int seedEndIndex = input.indexOf('s');
             String inputSeed = input.substring(1, seedEndIndex);
-            createNewWorld("",inputSeed,false);
+            createNewWorld("", inputSeed, false);
             input = input.substring(seedEndIndex);
-        }
-        else if(input.charAt(0) == 'l') {
+        } else if (input.charAt(0) == 'l') {
             resumePrevWorld(false);
             input = input.substring(1);
         }
