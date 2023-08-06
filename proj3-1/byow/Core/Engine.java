@@ -145,7 +145,7 @@ public class Engine implements Serializable {
 
 
     private void checkKeyBoard(String ch) {
-        //TODO: Read n letters of player input
+        //DONE: Read n letters of player input
         if(StdDraw.hasNextKeyTyped() || !ch.isEmpty()) {
             char currKey;
             if(!ch.isEmpty()) {
@@ -343,7 +343,7 @@ public class Engine implements Serializable {
     }
 
     public String solicitSeed() {
-        //TODO: Read n letters of player input
+        //DONE: Read n letters of player input
         String ret="";
         while(true) {
             if(StdDraw.hasNextKeyTyped()) {
@@ -358,7 +358,7 @@ public class Engine implements Serializable {
     }
 
     public String solicitNCharsInput(int n) {
-        //TODO: Read n letters of player input
+        //DONE: Read n letters of player input
         int i=0;
         String ret="";
         while(i<n) {
@@ -403,7 +403,7 @@ public class Engine implements Serializable {
      * @return the 2D TETile[][] representing the state of the world
      */
     public TETile[][] interactWithInputString(String input) {
-        // TODO: Fill out this method so that it run the engine using the input
+        // DONE: Fill out this method so that it run the engine using the input
         // passed in as an argument, and return a 2D tile representation of the
         // world that would have been drawn if the same inputs had been given
         // to interactWithKeyboard().
@@ -444,19 +444,18 @@ public class Engine implements Serializable {
 //                engine.interactWithKeyboard();
 //            }
         }
+//
+//        teRender.renderFrame(backWorld,GUI);
+//        this.prevMouseX = (int) StdDraw.mouseX();
+//        this.prevMouseY = (int) StdDraw.mouseY();
+//
+//        while(!gameOver) {
+//            checkMouse(prevMouseX,prevMouseY);
+//            checkKeyBoard("");
+//
+//        }
 
-        teRender.renderFrame(backWorld,GUI);
-        this.prevMouseX = (int) StdDraw.mouseX();
-        this.prevMouseY = (int) StdDraw.mouseY();
-
-        while(!gameOver) {
-            checkMouse(prevMouseX,prevMouseY);
-            checkKeyBoard("");
-
-        }
-
-
-        // Get the final world frame after all commands are processed
+        // Get the final world frame after all commands are processed TO the Autograder!!!
         return backWorld;
     }
 }
