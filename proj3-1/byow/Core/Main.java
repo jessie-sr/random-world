@@ -11,7 +11,6 @@ public class Main {
 //        System.out.println(engine.toString());
         if (args.length > 2) {
             System.out.println("Can only have two arguments - the flag and input string");
-            System.exit(0);
         } else if (args.length == 2 && args[0].equals("-s")) {
             Engine engine = new Engine();
             engine.interactWithInputString(args[1]);
@@ -19,7 +18,7 @@ public class Main {
         } else {
             Engine engine = new Engine();
             engine.interactWithKeyboard();
-            System.exit(0);
         }
+        System.exit(0);
     }
 }

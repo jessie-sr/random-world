@@ -49,16 +49,13 @@ public class Engine implements Serializable {
     public void interactWithKeyboard() {
         // display init UI first
         //process user's init input
-        String initialInput = keyboardInit();
-        if(initialInput.equals("q") || initialInput.equals("Q")) {
-            return;
-        }
+        keyboardInit();
         this.prevMouseX = (int) StdDraw.mouseX();
         this.prevMouseY = (int) StdDraw.mouseY();
 
         while(!gameOver) {
             checkMouse(prevMouseX,prevMouseY);
-            checkKeyBoard();
+            checkKeyBoard("");
 
         }
 
@@ -78,7 +75,7 @@ public class Engine implements Serializable {
             if(input.equals("n") || input.equals("N")) {
                 DrawFrame.drawInputStringToFrame("");
                 String inputSeed = solicitSeed();
-                createNewWorld(inputHistory,inputSeed);
+                createNewWorld(inputHistory,inputSeed,true);
                 return inputHistory;
             }
             if(input.equals("l") || input.equals("L")) {
@@ -87,7 +84,7 @@ public class Engine implements Serializable {
                     System.out.println("no saved world, try create a new one pressing n");
                 }
                 else {
-                    resumePrevWorld();
+                    resumePrevWorld(true);
                     return inputHistory;
                 }
             }
@@ -107,7 +104,7 @@ public class Engine implements Serializable {
                                 System.out.println("no saved world, try other saved slots or create a new one pressing n");
                                 break;
                             }
-                            resumePrevWorld();
+                            resumePrevWorld(true);
                             return inputHistory;
                         }
                         case "1" -> {
@@ -115,7 +112,7 @@ public class Engine implements Serializable {
                                 System.out.println("no extra saved world, try other saved slots or create a new one pressing n");
                                 break;
                             }
-                            resumePrevWorld2();
+                            resumePrevWorld2(true);
                             return inputHistory;
                         }
                     }
@@ -147,10 +144,16 @@ public class Engine implements Serializable {
     }
 
 
-    private void checkKeyBoard() {
+    private void checkKeyBoard(String ch) {
         //TODO: Read n letters of player input
-        if(StdDraw.hasNextKeyTyped()) {
-            char currKey = StdDraw.nextKeyTyped();
+        if(StdDraw.hasNextKeyTyped() || !ch.isEmpty()) {
+            char currKey;
+            if(!ch.isEmpty()) {
+                currKey = ch.charAt(0);
+            }
+            else {
+                currKey = StdDraw.nextKeyTyped();
+            }
             switch (currKey) {
                 case 'w' -> {
                     if (currGenerator.board[currGenerator.playerX][currGenerator.playerY + 1] != 2) {
@@ -212,7 +215,7 @@ public class Engine implements Serializable {
                     gameOver = true;
                 }
                 case 'o' -> {
-                    createNewWorld("0","");
+                    createNewWorld("0","",true);
                     preKeyPress = 'o';
                     System.out.println("KEYB INPUT "+currKey + "  NewWorldCreated!");
 
@@ -281,34 +284,38 @@ public class Engine implements Serializable {
         }
     }
 
-    private void resumePrevWorld() {
+    private void resumePrevWorld(boolean keyBoardStart) {
         teRender.initialize(WIDTH, HEIGHT);
         File prevGenerator = new File(savedWorlds,"prevWorld.txt");
         if(!prevGenerator.exists()) {
-            createNewWorld("0","");
+            createNewWorld("0","",keyBoardStart);
             return;
         }
         this.currGenerator = persistenceUtils.readObject(prevGenerator,RoomGenerator.class);
         this.backWorld = currGenerator.world;
         this.currGenerator.drawRooms(); // call generateRooms() and connect() first;
-        teRender.renderFrame(backWorld);
+        if(keyBoardStart) {
+            teRender.renderFrame(backWorld);
+        }
     }
 
-    private void resumePrevWorld2() {
+    private void resumePrevWorld2(boolean keyBoardStart) {
         teRender.initialize(WIDTH, HEIGHT);
         File prevGenerator = new File(savedWorlds2,"prevWorld2.txt");
         if(!prevGenerator.exists()) {
-            createNewWorld("0","");
+            createNewWorld("0","",keyBoardStart);
             return;
         }
         this.currGenerator = persistenceUtils.readObject(prevGenerator,RoomGenerator.class);
         this.backWorld = currGenerator.world;
         this.currGenerator.drawRooms(); // call generateRooms() and connect() first;
-        teRender.renderFrame(backWorld);
+        if(keyBoardStart) {
+            teRender.renderFrame(backWorld);
+        }
     }
 
 
-    private void createNewWorld(String inputHistory,String inputSeed) {
+    private void createNewWorld(String inputHistory,String inputSeed,Boolean keyBoardStart) {
         if(!inputSeed.isEmpty()) {
             this.seed = Long.parseLong(inputSeed);
         }
@@ -330,7 +337,9 @@ public class Engine implements Serializable {
         }
         currGenerator.drawRooms();
         // draws the world to the screen.
-        teRender.renderFrame(backWorld);
+        if(keyBoardStart) {
+            teRender.renderFrame(backWorld);
+        }
     }
 
     public String solicitSeed() {
@@ -401,47 +410,51 @@ public class Engine implements Serializable {
         //
         // See proj3.byow.InputDemo for a demo of how you can make a nice clean interface
         // that works for many different input types.
-        
-        Engine engine = new Engine();
 
+        input = input.toLowerCase(Locale.ROOT);
         // Start a new game by processing the first character 'n' (new game)
         if (input.charAt(0) == 'n') {
             int seedEndIndex = input.indexOf('s');
-            long seed = Long.parseLong(input.substring(1, seedEndIndex));
-
-            // initialize the tile rendering engine with a window of size WIDTH x HEIGHT
-            teRender.initialize(WIDTH, HEIGHT);
-
-            // initialize tiles
-
-            RoomGenerator newGenerator = new RoomGenerator(seed);
-            backWorld = newGenerator.world;
-            newGenerator.drawRooms();
-
-            // draws the world to the screen.
-            teRender.renderFrame(backWorld);
-
+            String inputSeed = input.substring(1, seedEndIndex);
+            createNewWorld("",inputSeed,false);
             input = input.substring(seedEndIndex);
-        } else {
-            throw new IllegalArgumentException("Invalid input string. It should start with 'n'.");
+        }
+        else if(input.charAt(0) == 'l') {
+            resumePrevWorld(false);
+            input = input.substring(1);
+        }
+            else {
+                throw new IllegalArgumentException("Invalid input string. It should start with 'n or l '.");
         }
 
         // Process the remaining characters in the input string
         for (int i = 1; i < input.length(); i++) {
             char command = input.charAt(i);
-            if (command == ':') {
-                // Save and quit the game if the next two characters are 'q'
-                if (input.substring(i, i + 2).equals(":q")) {
-                    // engine.saveAndQuit();
-                    break; // Exit the loop as the game is saved and quit
-                } else {
-                    throw new IllegalArgumentException("Invalid input string. ':' should be followed by 'q'.");
-                }
-            } else {
-                // Process the regular commands: 'w', 's', 'a', 'd'
-                engine.interactWithKeyboard();
-            }
+            checkKeyBoard(String.valueOf(command));
+//            if (command == ':') {
+//                // Save and quit the game if the next two characters are 'q'
+//                if (input.substring(i, i + 2).equals(":q")) {
+//                    // engine.saveAndQuit();
+//                    break; // Exit the loop as the game is saved and quit
+//                } else {
+//                    throw new IllegalArgumentException("Invalid input string. ':' should be followed by 'q'.");
+//                }
+//            } else {
+//                // Process the regular commands: 'w', 's', 'a', 'd'
+//                engine.interactWithKeyboard();
+//            }
         }
+
+        teRender.renderFrame(backWorld,GUI);
+        this.prevMouseX = (int) StdDraw.mouseX();
+        this.prevMouseY = (int) StdDraw.mouseY();
+
+        while(!gameOver) {
+            checkMouse(prevMouseX,prevMouseY);
+            checkKeyBoard("");
+
+        }
+
 
         // Get the final world frame after all commands are processed
         return backWorld;
