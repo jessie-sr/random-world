@@ -63,6 +63,89 @@ public class Engine implements Serializable {
         }
 
     }
+    private String keyboardInit() {
+        // display init UI first
+        //process user's init input
+        String inputHistory = "";
+        while (true) {
+            DrawFrame.drawFrame();
+            String input = solicitNCharsInput(1);
+            input = input.toLowerCase(Locale.ROOT);
+            if(input.equals("q") || input.equals("Q")) {
+                System.exit(0);
+                return inputHistory;
+            }
+            if(input.equals("n") || input.equals("N")) {
+                DrawFrame.drawInputStringToFrame("");
+                String inputSeed = solicitSeed();
+                createNewWorld(inputHistory,inputSeed);
+                return inputHistory;
+            }
+            if(input.equals("l") || input.equals("L")) {
+                //load files
+                if(!savedWorlds.exists()) {
+                    System.out.println("no saved world, try create a new one pressing n");
+                }
+                else {
+                    resumePrevWorld();
+                    return inputHistory;
+                }
+            }
+            if(input.equals("r")) {
+                // display a new sub-menu
+                DrawFrame.drawSavedSubFrame();
+                while(true) {
+                    // wait for further input
+                    String subInput = solicitNCharsInput(1);
+                    subInput = subInput.toLowerCase();
+                    if(subInput.equals("q")) {
+                        break;
+                    }
+                    switch (subInput) {
+                        case "0" -> {
+                            if (!savedWorlds.exists()) {
+                                System.out.println("no saved world, try other saved slots or create a new one pressing n");
+                                break;
+                            }
+                            resumePrevWorld();
+                            return inputHistory;
+                        }
+                        case "1" -> {
+                            if (!savedWorlds2.exists()) {
+                                System.out.println("no extra saved world, try other saved slots or create a new one pressing n");
+                                break;
+                            }
+                            resumePrevWorld2();
+                            return inputHistory;
+                        }
+                    }
+                }
+
+            }
+            if(input.equals("s")) {
+                // display a new sub-menu
+                DrawFrame.drawAppearanceSelection();
+                while(true) {
+                    // wait for further input
+                    String subInput = solicitNCharsInput(1);
+                    subInput = subInput.toLowerCase();
+                    if(subInput.equals("q")) {
+                        break;
+                    }
+                    if(subInput.equals("0") || subInput.equals("1") || subInput.equals("2")) {
+                        inputHistory += subInput;
+                        break;
+                    }
+
+                }
+
+
+            }
+        }
+
+
+    }
+
 
     private void checkKeyBoard() {
         //TODO: Read n letters of player input
@@ -129,7 +212,7 @@ public class Engine implements Serializable {
                     gameOver = true;
                 }
                 case 'o' -> {
-                    createNewWorld("0");
+                    createNewWorld("0","");
                     preKeyPress = 'o';
                     System.out.println("KEYB INPUT "+currKey + "  NewWorldCreated!");
 
@@ -153,9 +236,6 @@ public class Engine implements Serializable {
             if(currKey != 'l' && currKey != 'o') { // if user inputs wasd
                 currGenerator.updateUserPosition();
                 currGenerator.drawRooms();
-//                if(currGenerator.isLightOn) {
-//                    currGenerator.lightOn();
-//                }
                 teRender.renderFrame(backWorld, GUI);
             }
 
@@ -201,77 +281,11 @@ public class Engine implements Serializable {
         }
     }
 
-    private String keyboardInit() {
-        // display init UI first
-        //process user's init input
-        String inputHistory = "";
-        while (true) {
-            drawFrame();
-            String input = solicitNCharsInput(1);
-            input = input.toLowerCase(Locale.ROOT);
-            if(input.equals("q") || input.equals("Q")) {
-                return inputHistory;
-            }
-            if(input.equals("n") || input.equals("N")) {
-                createNewWorld(inputHistory);
-                return inputHistory;
-            }
-            if(input.equals("l") || input.equals("L")) {
-                //load files
-                if(!savedWorlds.exists()) {
-                    System.out.println("no saved world, try create a new one pressing n");
-                }
-                else {
-                    resumePrevWorld();
-                    return inputHistory;
-                }
-            }
-            if(input.equals("r")) {
-                // display a new sub-menu
-                drawSavedSubFrame();
-                while(true) {
-                    // wait for further input
-                    String subInput = solicitNCharsInput(1);
-                    subInput = subInput.toLowerCase();
-                    if(subInput.equals("q")) {
-                        break;
-                    }
-                    switch (subInput) {
-                        case "0" -> {
-                            if (!savedWorlds.exists()) {
-                                System.out.println("no saved world, try other saved slots or create a new one pressing n");
-                                break;
-                            }
-                            resumePrevWorld();
-                            return inputHistory;
-                        }
-                        case "1" -> {
-                            if (!savedWorlds2.exists()) {
-                                System.out.println("no extra saved world, try other saved slots or create a new one pressing n");
-                                break;
-                            }
-                            resumePrevWorld2();
-                            return inputHistory;
-                        }
-                    }
-                }
-
-            }
-            if(input.equals("0") || input.equals("1") || input.equals("2")) {
-                inputHistory += input;
-
-            }
-        }
-
-
-    }
-
-
     private void resumePrevWorld() {
         teRender.initialize(WIDTH, HEIGHT);
         File prevGenerator = new File(savedWorlds,"prevWorld.txt");
         if(!prevGenerator.exists()) {
-            createNewWorld("0");
+            createNewWorld("0","");
             return;
         }
         this.currGenerator = persistenceUtils.readObject(prevGenerator,RoomGenerator.class);
@@ -284,7 +298,7 @@ public class Engine implements Serializable {
         teRender.initialize(WIDTH, HEIGHT);
         File prevGenerator = new File(savedWorlds2,"prevWorld2.txt");
         if(!prevGenerator.exists()) {
-            createNewWorld("0");
+            createNewWorld("0","");
             return;
         }
         this.currGenerator = persistenceUtils.readObject(prevGenerator,RoomGenerator.class);
@@ -293,8 +307,14 @@ public class Engine implements Serializable {
         teRender.renderFrame(backWorld);
     }
 
-    private void createNewWorld(String inputHistory) {
-        this.seed =  RandomUtils.uniform(new Random(),Integer.MAX_VALUE);
+
+    private void createNewWorld(String inputHistory,String inputSeed) {
+        if(!inputSeed.isEmpty()) {
+            this.seed = Long.parseLong(inputSeed);
+        }
+        else {
+            this.seed =  RandomUtils.uniform(new Random(),Integer.MAX_VALUE);
+        }
         // initialize the tile rendering engine with a window of size WIDTH x HEIGHT
         teRender.initialize(WIDTH, HEIGHT);
         currGenerator = new RoomGenerator(seed);
@@ -313,6 +333,20 @@ public class Engine implements Serializable {
         teRender.renderFrame(backWorld);
     }
 
+    public String solicitSeed() {
+        //TODO: Read n letters of player input
+        String ret="";
+        while(true) {
+            if(StdDraw.hasNextKeyTyped()) {
+                char currKey = StdDraw.nextKeyTyped();
+                if(currKey == 's' || currKey == 'S') {
+                    return ret;
+                }
+                ret += currKey;
+                DrawFrame.drawInputStringToFrame(ret);
+            }
+        }
+    }
 
     public String solicitNCharsInput(int n) {
         //TODO: Read n letters of player input
@@ -334,90 +368,7 @@ public class Engine implements Serializable {
 //        drawFrame();
     }
 
-    public void drawMouse(int x, int y) {
-        /* Take the input string S and display it at the center of the screen,
-         * with the pen settings given below. */
-        StdDraw.setCanvasSize(WIDTH * 8, HEIGHT * 16);
-        Font font = new Font("Monaco", Font.BOLD, 30);
-        StdDraw.setFont(font);
-        StdDraw.setXscale(0, WIDTH);
-        StdDraw.setYscale(0, HEIGHT);
-        StdDraw.clear(Color.BLACK);
-        StdDraw.enableDoubleBuffering();
 
-        StdDraw.setPenColor(Color.WHITE);
-        Font fontBig = new Font("Monaco", Font.BOLD, 30);
-        StdDraw.setFont(fontBig);
-        StdDraw.text(WIDTH / 2, HEIGHT * 0.9, x + "and" +y);
-        StdDraw.show();
-    }
-
-    private void drawSavedSubFrame() {
-        // Check files' existence
-        String promt1 = null;
-        String promt2 = null;
-        if (savedWorlds.exists()) {
-            promt1 = "Filled";
-        }
-        else {
-            promt1 = "empty";
-        }
-        if (savedWorlds2.exists()) {
-            promt2 = "Filled";
-        }
-        else {
-            promt2 = "Empty";
-        }
-
-        // Board settings
-        StdDraw.setCanvasSize(WIDTH * 8, HEIGHT * 16);
-        Font font = new Font("Monaco", Font.BOLD, 30);
-        StdDraw.setFont(font);
-        StdDraw.setXscale(0, WIDTH);
-        StdDraw.setYscale(0, HEIGHT);
-        StdDraw.clear(Color.BLACK);
-        StdDraw.enableDoubleBuffering();
-
-        StdDraw.setPenColor(Color.WHITE);
-        Font fontBig = new Font("Monaco", Font.BOLD, 30);
-        StdDraw.setFont(fontBig);
-        StdDraw.text(WIDTH / 2, HEIGHT * 0.9, "Memory Slots");
-
-        Font fontSmall = new Font("Monaco", Font.BOLD, 20);
-        StdDraw.setFont(fontSmall);
-        StdDraw.text(WIDTH / 2, HEIGHT / 2 + 2, "Default Slot: Press 0 to load;  Status: " + promt1);
-        StdDraw.text(WIDTH / 2, HEIGHT / 2 - 2, "Additional Slot: Press 1 to load;  Status: " + promt2);
-        StdDraw.text(WIDTH / 2, HEIGHT * 0.2, "Press Q to return to previous frame");
-        StdDraw.show();
-
-    }
-    public void drawFrame() {
-        /* Take the input string S and display it at the center of the screen,
-         * with the pen settings given below. */
-        StdDraw.setCanvasSize(WIDTH * 8, HEIGHT * 16);
-        Font font = new Font("Monaco", Font.BOLD, 30);
-        StdDraw.setFont(font);
-        StdDraw.setXscale(0, WIDTH);
-        StdDraw.setYscale(0, HEIGHT);
-        StdDraw.clear(Color.BLACK);
-        StdDraw.enableDoubleBuffering();
-
-        StdDraw.setPenColor(Color.WHITE);
-        Font fontBig = new Font("Monaco", Font.BOLD, 30);
-        StdDraw.setFont(fontBig);
-        StdDraw.text(WIDTH / 2, HEIGHT * 0.9, "CS61BL: THE GAME");
-
-        Font fontSmall = new Font("Monaco", Font.BOLD, 20);
-        StdDraw.setFont(fontSmall);
-        StdDraw.text(WIDTH / 2, HEIGHT /2 + 4, "new game (N)");
-        StdDraw.text(WIDTH / 2, HEIGHT /2 + 2, "load game (L)");
-        StdDraw.text(WIDTH / 2, HEIGHT /2, "quit game (Q)");
-        StdDraw.text(WIDTH / 2, HEIGHT /2 - 2, "check save slots (R)");
-        StdDraw.text(WIDTH / 2, HEIGHT /3, "First, choose your appearance using digits 0,1,2");
-        StdDraw.text(WIDTH / 2, HEIGHT /3 - 2, "Then press Q or L or N");
-        StdDraw.text(WIDTH / 2, HEIGHT /3 - 4, "0:default avatar;  1:mountain avatar;  2:water avatar");
-        StdDraw.show();
-    }
 
 
 
