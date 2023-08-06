@@ -80,9 +80,9 @@ public class Engine implements Serializable {
             }
             if(input.equals("l") || input.equals("L")) {
                 //load files
-                if(!savedWorlds.exists()) {
-                    System.out.println("no saved world, try create a new one pressing n");
-                }
+//                if(!savedWorlds.exists()) {
+//                    System.out.println("no saved world, try create a new one pressing n");
+//                }
                 else {
                     resumePrevWorld(true);
                     return inputHistory;
@@ -254,11 +254,12 @@ public class Engine implements Serializable {
         File prevWorld2 = new File(savedWorlds2,"prevWorld2.txt");
         persistenceUtils.writeObject(prevWorld2,currGenerator);
     }
-
+    // tobedone!!!!!
     private void setupFiles() {
-        if(!savedWorlds.exists()) {
-            savedWorlds.mkdir();
-        }
+//        if(!savedWorlds.exists()) {
+//            savedWorlds.mkdir();
+//        }
+        savedWorlds.mkdir();
     }
     private void setupFiles2() {
         if(!savedWorlds2.exists()) {
