@@ -423,9 +423,9 @@ public class Engine implements Serializable {
             resumePrevWorld(false);
             input = input.substring(1);
         }
-            else {
-                throw new IllegalArgumentException("Invalid input string. It should start with 'n or l '.");
-        }
+//            else {
+//                throw new IllegalArgumentException("Invalid input string. It should start with 'n or l '.");
+//        }
 
         // Process the remaining characters in the input string
         for (int i = 1; i < input.length(); i++) {
