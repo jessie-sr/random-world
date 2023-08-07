@@ -104,8 +104,8 @@ public class Engine implements Serializable {
                     switch (subInput) {
                         case "0" -> {
                             if (!savedWorlds.exists()) {
-                                System.out.println("no saved world, " +
-                                        "try other saved slots or create a new one pressing n");
+                                System.out.println("no saved world, "
+                                        + "try other saved slots or create a new one pressing n");
                                 break;
                             }
                             resumePrevWorld(true);
@@ -113,8 +113,8 @@ public class Engine implements Serializable {
                         }
                         case "1" -> {
                             if (!savedWorlds2.exists()) {
-                                System.out.println("no extra saved world, " +
-                                        "try other saved slots or create a new one pressing n");
+                                System.out.println("no extra saved world, "
+                                        + "try other saved slots or create a new one pressing n");
                                 break;
                             }
                             resumePrevWorld2(true);
@@ -125,7 +125,6 @@ public class Engine implements Serializable {
                         }
                     }
                 }
-
             }
             if (input.equals("s")) {
                 // display a new sub-menu
@@ -141,12 +140,9 @@ public class Engine implements Serializable {
                         inputHistory += subInput;
                         break;
                     }
-
                 }
-
             }
         }
-
     }
 
     private void checkKeyBoard(String ch) {
@@ -163,36 +159,28 @@ public class Engine implements Serializable {
                     if (currGenerator.board[currGenerator.playerX][currGenerator.playerY + 1] != 2) {
                         return;
                     } else {
-                        currGenerator.playerY += 1;
-                        System.out.println("KEYB MOVED " + currKey);
-                        preKeyPress = 'w';
+                        move1('w', currKey);
                     }
                 }
                 case 'a' -> {
                     if (currGenerator.board[currGenerator.playerX - 1][currGenerator.playerY] != 2) {
                         return;
                     } else {
-                        currGenerator.playerX -= 1;
-                        System.out.println("KEYB MOVED " + currKey);
-                        preKeyPress = 'a';
+                        move2('a', currKey);
                     }
                 }
                 case 's' -> {
                     if (currGenerator.board[currGenerator.playerX][currGenerator.playerY - 1] != 2) {
                         return;
                     } else {
-                        currGenerator.playerY -= 1;
-                        System.out.println("KEYB MOVED " + currKey);
-                        preKeyPress = 's';
+                        move2('s', currKey);
                     }
                 }
                 case 'd' -> {
                     if (currGenerator.board[currGenerator.playerX + 1][currGenerator.playerY] != 2) {
                         return;
                     } else {
-                        currGenerator.playerX += 1;
-                        System.out.println("KEYB MOVED " + currKey);
-                        preKeyPress = 'd';
+                        move1('d', currKey);
                     }
                 }
                 case ':' -> {
@@ -234,9 +222,19 @@ public class Engine implements Serializable {
                 currGenerator.drawRooms();
                 teRender.renderFrame(backWorld, GUI);
             }
-
         }
+    }
 
+    private void move1(Character c, Character currKey) {
+        currGenerator.playerY += 1;
+        System.out.println("KEYB MOVED " + currKey);
+        preKeyPress = c;
+    }
+
+    private void move2(Character c, Character currKey) {
+        currGenerator.playerY -= 1;
+        System.out.println("KEYB MOVED " + currKey);
+        preKeyPress = c;
     }
 
     private void light(Character currKey) {
