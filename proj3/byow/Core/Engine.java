@@ -159,28 +159,28 @@ public class Engine implements Serializable {
                     if (currGenerator.board[currGenerator.playerX][currGenerator.playerY + 1] != 2) {
                         return;
                     } else {
-                        move1('w', currKey);
+                        moveUp('w', currKey);
                     }
                 }
                 case 'a' -> {
                     if (currGenerator.board[currGenerator.playerX - 1][currGenerator.playerY] != 2) {
                         return;
                     } else {
-                        move2('a', currKey);
+                        moveLeft('a', currKey);
                     }
                 }
                 case 's' -> {
                     if (currGenerator.board[currGenerator.playerX][currGenerator.playerY - 1] != 2) {
                         return;
                     } else {
-                        move2('s', currKey);
+                        moveDown('s', currKey);
                     }
                 }
                 case 'd' -> {
                     if (currGenerator.board[currGenerator.playerX + 1][currGenerator.playerY] != 2) {
                         return;
                     } else {
-                        move1('d', currKey);
+                        moveRight('d', currKey);
                     }
                 }
                 case ':' -> {
@@ -225,16 +225,28 @@ public class Engine implements Serializable {
         }
     }
 
-    private void move1(Character c, Character currKey) {
+    private void moveUp(Character w, Character currKey) {
         currGenerator.playerY += 1;
         System.out.println("KEYB MOVED " + currKey);
-        preKeyPress = c;
+        preKeyPress = w;
     }
 
-    private void move2(Character c, Character currKey) {
+    private void moveLeft(Character a, Character currKey) {
+        currGenerator.playerX -= 1;
+        System.out.println("KEYB MOVED " + currKey);
+        preKeyPress = a;
+    }
+
+    private void moveDown(Character s, Character currKey) {
         currGenerator.playerY -= 1;
         System.out.println("KEYB MOVED " + currKey);
-        preKeyPress = c;
+        preKeyPress = s;
+    }
+
+    private void moveRight(Character d, Character currKey) {
+        currGenerator.playerX += 1;
+        System.out.println("KEYB MOVED " + currKey);
+        preKeyPress = d;
     }
 
     private void light(Character currKey) {

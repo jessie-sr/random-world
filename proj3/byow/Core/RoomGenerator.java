@@ -65,11 +65,11 @@ public class RoomGenerator implements Serializable {
             }
         }
         this.random = new Random(seed);
-        this.numRooms = 30;
+        this.numRooms = 28;
         this.minWidth = 4;
-        this.maxWidth = Engine.WIDTH / 10;
+        this.maxWidth = Engine.WIDTH / 12;
         this.minHeight = 4;
-        this.maxHeight = Engine.HEIGHT / 3;
+        this.maxHeight = Engine.HEIGHT / 4;
         this.roomMap = new HashMap<>();
     }
 
