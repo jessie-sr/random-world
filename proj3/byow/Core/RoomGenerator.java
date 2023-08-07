@@ -77,9 +77,6 @@ public class RoomGenerator implements Serializable {
 
 
     public void drawRooms() {
-//        generateRooms();
-//        connectRooms();
-//        initUserPosition();
         for (int i = 0; i < board.length; i++) {
             for (int j = 0; j < board[0].length; j++) {
                 if (board[i][j] == 1) {
@@ -228,14 +225,6 @@ public class RoomGenerator implements Serializable {
     }
 
     public void lightOn() {
-//        for (Room r: roomMap.values()) {
-//            r.addLight(board);
-//            if (r.getLight() != null) {
-//                r.getLight().On();
-//            }
-//        }
-//        world[playerX][playerY] = userAppearance;
-
         for (Room r: roomMap.values()) {
             int x = r.getX() + r.getWidth() / 2;
             int y = r.getY() + r.getHeight() / 2;
@@ -255,12 +244,6 @@ public class RoomGenerator implements Serializable {
     }
 
     public void lightOff() {
-//        for (Room r: roomMap.values()) {
-//            if (r.getLight() != null) {
-//                r.getLight().Off();
-//            }
-//        }
-//        world[playerX][playerY] = userAppearance;
         drawRooms();
     }
 }

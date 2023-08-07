@@ -6,9 +6,6 @@ package byow.Core;
  */
 public class Main {
     public static void main(String[] args) {
-//        Engine engine = new Engine();
-//        engine.interactWithInputString("n369sssww");
-//        System.out.println(engine.toString());
         if (args.length > 2) {
             System.out.println("Can only have two arguments - the flag and input string");
         } else if (args.length == 2 && args[0].equals("-s")) {
