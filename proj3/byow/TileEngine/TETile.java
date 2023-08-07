@@ -107,6 +107,7 @@ public class TETile implements Serializable {
         StdDraw.filledSquare(x + 0.5, y + 0.5, 0.5);
         StdDraw.setPenColor(textColor);
         StdDraw.text(x + 0.5, y + 0.5, Character.toString(character()));
+//        StdDraw.text(x + 0.5, y + 0.5, "this is rxt");
 
     }
 
@@ -125,6 +126,7 @@ public class TETile implements Serializable {
         StdDraw.filledSquare(x + 0.5, y + 0.5, 0.5);
         StdDraw.setPenColor(textColor);
         StdDraw.text(x + 0.5, y + 0.5, currString);
+//        StdDraw.text(x + 0.5, y + 0.5, "this is rxt");
 
     }
 

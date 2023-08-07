@@ -117,6 +117,7 @@ public class TERenderer {
         GUI[0].drawString(width * 0.5,height-1);
         GUI[1].drawString(width * 0.75,height-1);
 
+
         StdDraw.show();
     }
 }

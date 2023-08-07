@@ -7,6 +7,7 @@ import byow.byowTools.RandomUtils;
 import edu.princeton.cs.algs4.StdDraw;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.io.File;
 import java.io.Serializable;
 import java.util.Locale;
@@ -16,9 +17,6 @@ public class Engine implements Serializable {
     /* Feel free to change the WIDTH and HEIGHT. */
     public static final int WIDTH = 80;
     public static final int HEIGHT = 30;
-    private static final int R = 216;
-    private static final int GB = 128;
-
     private static String[] boardToWorldMap = {"outside", "wall", "floor"};
     private static int GUINUM = 4;
     TERenderer teRender = new TERenderer();
@@ -37,13 +35,13 @@ public class Engine implements Serializable {
     public Engine() {
         this.GUI = new TETile[GUINUM];
         this.GUI[0] = new TETile('#', "Mouse initialized ",
-                new Color(R, GB, GB), Color.BLACK, "gui0");
+                new Color(216, 128, 128), Color.BLACK, "gui0");
         this.GUI[1] = new TETile('#', "Press o to start new world ",
-                new Color(R, GB, GB), Color.BLACK, "gui1");
+                new Color(216, 128, 128), Color.BLACK, "gui1");
     }
 
     public static void main(String[] args) {
-        // drawFrame();
+//        drawFrame();
     }
 
     /**
@@ -52,7 +50,7 @@ public class Engine implements Serializable {
      */
     public void interactWithKeyboard() {
         // display init UI first
-        // process user's init input
+        //process user's init input
         keyboardInit();
         this.prevMouseX = (int) StdDraw.mouseX();
         this.prevMouseY = (int) StdDraw.mouseY();
@@ -67,7 +65,7 @@ public class Engine implements Serializable {
 
     private String keyboardInit() {
         // display init UI first
-        // process user's init input
+        //process user's init input
         String inputHistory = "";
         while (true) {
             DrawFrame.drawFrame();
@@ -84,8 +82,14 @@ public class Engine implements Serializable {
                 return inputHistory;
             }
             if (input.equals("l") || input.equals("L")) {
+                //load files
+//                if(!savedWorlds.exists()) {
+//                    System.out.println("no saved world, try create a new one pressing n");
+//                }
+//                else {
                 resumePrevWorld(true);
                 return inputHistory;
+//                }
             }
             if (input.equals("r")) {
                 // display a new sub-menu
@@ -232,9 +236,6 @@ public class Engine implements Serializable {
                         currGenerator.isLightOn = true;
                     }
                 }
-                default -> {
-                    break;
-                }
             }
             if (currKey != 'l' && currKey != 'o') { // if user inputs wasd
                 currGenerator.updateUserPosition();
@@ -247,7 +248,7 @@ public class Engine implements Serializable {
     }
 
     private void saveTheWorld() {
-        // File prevWorld = new File(savedWorlds, "prevWorld.txt");
+//        File prevWorld = new File(savedWorlds, "prevWorld.txt");
         persistenceUtils.writeObject(savedWorlds, currGenerator);
     }
 
@@ -256,11 +257,12 @@ public class Engine implements Serializable {
         persistenceUtils.writeObject(prevWorld2, currGenerator);
     }
 
+    // tobedone!!!!!
     private void setupFiles() {
-        if(!savedWorlds.exists()) {
-            savedWorlds.mkdir();
-        }
-        savedWorlds.mkdir();
+//        if(!savedWorlds.exists()) {
+//            savedWorlds.mkdir();
+//        }
+//        savedWorlds.mkdir();
     }
 
     private void setupFiles2() {
@@ -279,14 +281,21 @@ public class Engine implements Serializable {
             int mousePointer = currGenerator.board[currMouseX][currMouseY];
             this.prevMouseX = currMouseX;
             this.prevMouseY = currMouseY;
+//            System.out.println("MOUSE MOVED");
             GUI[0] = new TETile('#', "Your mouse is at  " + boardToWorldMap[mousePointer],
-                    new Color(R, GB, GB), Color.BLACK, "gui");
+                    new Color(216, 128, 128), Color.BLACK, "gui");
             teRender.renderFrame(currGenerator.world, GUI);
+//            StdDraw.pause(500);
         }
     }
 
     private void resumePrevWorld(boolean keyBoardStart) {
         teRender.initialize(WIDTH, HEIGHT);
+//        File prevGenerator = new File(savedWorlds, "prevWorld.txt");
+//        if (!prevGenerator.exists()) {
+//            createNewWorld("0", "", keyBoardStart);
+//            return;
+//        }
         this.currGenerator = persistenceUtils.readObject(savedWorlds, RoomGenerator.class);
         this.backWorld = currGenerator.world;
         this.currGenerator.drawRooms(); // call generateRooms() and connect() first;
@@ -360,8 +369,10 @@ public class Engine implements Serializable {
                 char currKey = StdDraw.nextKeyTyped();
                 i++;
                 ret += currKey;
+//                drawFrame(ret);
             }
         }
+//        StdDraw.pause(500);
         return ret;
     }
 
@@ -406,13 +417,38 @@ public class Engine implements Serializable {
             resumePrevWorld(false);
             input = input.substring(1);
         }
-
+//            else {
+//                throw new IllegalArgumentException("Invalid input string. It should start with 'n or l '.");
+//        }
 
         // Process the remaining characters in the input string
         for (int i = 0; i < input.length(); i++) {
             char command = input.charAt(i);
             checkKeyBoard(String.valueOf(command));
+//            if (command == ':') {
+//                // Save and quit the game if the next two characters are 'q'
+//                if (input.substring(i, i + 2).equals(":q")) {
+//                    // engine.saveAndQuit();
+//                    break; // Exit the loop as the game is saved and quit
+//                } else {
+//                    throw new IllegalArgumentException("Invalid input string. ':' should be followed by 'q'.");
+//                }
+//            } else {
+//                // Process the regular commands: 'w', 's', 'a', 'd'
+//                engine.interactWithKeyboard();
+//            }
         }
+//
+//        teRender.renderFrame(backWorld,GUI);
+//        this.prevMouseX = (int) StdDraw.mouseX();
+//        this.prevMouseY = (int) StdDraw.mouseY();
+//
+//        while(!gameOver) {
+//            checkMouse(prevMouseX,prevMouseY);
+//            checkKeyBoard("");
+//
+//        }
+
         // Get the final world frame after all commands are processed TO the Autograder!!!
         return backWorld;
     }
