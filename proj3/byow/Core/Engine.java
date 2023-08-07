@@ -18,7 +18,7 @@ public class Engine implements Serializable {
     public static final int WIDTH = 80;
     public static final int HEIGHT = 30;
 
-    private static final Color defaultColor = new Color(216, 128, 128);
+    private static final Color DEFAULTCOLOR = new Color(216, 128, 128);
     private static String[] boardToWorldMap = {"outside", "wall", "floor"};
     private static int GUINUM = 4;
     TERenderer teRender = new TERenderer();
@@ -37,9 +37,9 @@ public class Engine implements Serializable {
     public Engine() {
         this.GUI = new TETile[GUINUM];
         this.GUI[0] = new TETile('#', "Mouse initialized ",
-                defaultColor, Color.BLACK, "gui0");
+                DEFAULTCOLOR, Color.BLACK, "gui0");
         this.GUI[1] = new TETile('#', "Press o to start new world ",
-                defaultColor, Color.BLACK, "gui1");
+                DEFAULTCOLOR, Color.BLACK, "gui1");
     }
 
     public static void main(String[] args) {
@@ -104,7 +104,8 @@ public class Engine implements Serializable {
                     switch (subInput) {
                         case "0" -> {
                             if (!savedWorlds.exists()) {
-                                System.out.println("no saved world, try other saved slots or create a new one pressing n");
+                                System.out.println("no saved world, " +
+                                        "try other saved slots or create a new one pressing n");
                                 break;
                             }
                             resumePrevWorld(true);
@@ -112,11 +113,15 @@ public class Engine implements Serializable {
                         }
                         case "1" -> {
                             if (!savedWorlds2.exists()) {
-                                System.out.println("no extra saved world, try other saved slots or create a new one pressing n");
+                                System.out.println("no extra saved world, " +
+                                        "try other saved slots or create a new one pressing n");
                                 break;
                             }
                             resumePrevWorld2(true);
                             return inputHistory;
+                        }
+                        default -> {
+                            System.out.println("Invalid input");
                         }
                     }
                 }
@@ -196,8 +201,7 @@ public class Engine implements Serializable {
                 case 'q' -> {
                     if (preKeyPress != ':') {
                         return;
-                    }
-                    //save the world
+                    } //save the world
                     setupFiles();
                     saveTheWorld();
                     System.out.println("KEYB MOVED " + currKey);
@@ -206,8 +210,7 @@ public class Engine implements Serializable {
                 case 'e' -> {
                     if (preKeyPress != ':') {
                         return;
-                    }
-                    //save the world2
+                    } //save the world2
                     setupFiles2();
                     saveTheWorld2();
                     System.out.println("KEYB MOVED " + currKey);
@@ -220,19 +223,10 @@ public class Engine implements Serializable {
 
                 }
                 case 'l' -> {
-                    if (currGenerator.isLightOn) {
-                        //light off.
-                        currGenerator.isLightOn = false;
-                        currGenerator.lightOff();
-                        teRender.renderFrame(backWorld, GUI);
-                        System.out.println("KEYB INPUT " + currKey + "  LightsOff!");
-                    } else {
-                        currGenerator.lightOn();
-                        teRender.renderFrame(backWorld, GUI);
-                        preKeyPress = 'l';
-                        System.out.println("KEYB INPUT " + currKey + "  LightsOn!");
-                        currGenerator.isLightOn = true;
-                    }
+                    light(currKey);
+                }
+                default -> {
+                    System.out.println("Invalid input: " + currKey);
                 }
             }
             if (currKey != 'l' && currKey != 'o') { // if user inputs wasd
@@ -243,6 +237,22 @@ public class Engine implements Serializable {
 
         }
 
+    }
+
+    private void light(Character currKey) {
+        if (currGenerator.isLightOn) {
+            //light off.
+            currGenerator.isLightOn = false;
+            currGenerator.lightOff();
+            teRender.renderFrame(backWorld, GUI);
+            System.out.println("KEYB INPUT " + currKey + "  LightsOff!");
+        } else {
+            currGenerator.lightOn();
+            teRender.renderFrame(backWorld, GUI);
+            preKeyPress = 'l';
+            System.out.println("KEYB INPUT " + currKey + "  LightsOn!");
+            currGenerator.isLightOn = true;
+        }
     }
 
     private void saveTheWorld() {
@@ -269,19 +279,19 @@ public class Engine implements Serializable {
         }
     }
 
-    public void checkMouse(int prevMouseX, int prevMouseY) {
+    public void checkMouse(int mouseX, int mouseY) {
         int currMouseX = (int) StdDraw.mouseX();
         int currMouseY = (int) StdDraw.mouseY();
         if (currMouseY == HEIGHT) {
             return;
         }
-        if (prevMouseX != currMouseX || prevMouseY != currMouseY) {
+        if (mouseX != currMouseX || mouseY != currMouseY) {
             int mousePointer = currGenerator.board[currMouseX][currMouseY];
             this.prevMouseX = currMouseX;
             this.prevMouseY = currMouseY;
             // System.out.println("MOUSE MOVED");
             GUI[0] = new TETile('#', "Your mouse is at  " + boardToWorldMap[mousePointer],
-                    defaultColor, Color.BLACK, "gui");
+                    DEFAULTCOLOR, Color.BLACK, "gui");
             teRender.renderFrame(currGenerator.world, GUI);
             // StdDraw.pause(500);
         }
