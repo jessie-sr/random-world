@@ -30,7 +30,7 @@ public class Engine implements Serializable {
     private int prevMouseX;
     private int prevMouseY;
     private Character preKeyPress = 'w';
-    private File savedWorlds = new File("./savedWorld.txt");
+    private File savedWorlds = new File("./savedWorld");
     private File savedWorlds2 = new File("./savedWorld2");
 
 
@@ -83,13 +83,13 @@ public class Engine implements Serializable {
             }
             if (input.equals("l") || input.equals("L")) {
                 // load files
-                // if(!savedWorlds.exists()) {
-                // System.out.println("no saved world, try create a new one pressing n");
-                // }
-                // else {
+                 if(!savedWorlds.exists()) {
+                 System.out.println("no saved world, try create a new one pressing n");
+                 }
+                 else {
                 resumePrevWorld(true);
                 return inputHistory;
-                // }
+                 }
             }
             if (input.equals("r")) {
                 // display a new sub-menu
@@ -266,8 +266,8 @@ public class Engine implements Serializable {
     }
 
     private void saveTheWorld() {
-        // File prevWorld = new File(savedWorlds, "prevWorld.txt");
-        persistenceUtils.writeObject(savedWorlds, currGenerator);
+        File prevWorld = new File(savedWorlds, "prevWorld.txt");
+        persistenceUtils.writeObject(prevWorld, currGenerator);
     }
 
     private void saveTheWorld2() {
@@ -277,10 +277,10 @@ public class Engine implements Serializable {
 
     // tobedone!!!!!
     private void setupFiles() {
-        // if(!savedWorlds.exists()) {
-        // savedWorlds.mkdir();
-        // }
-        // savedWorlds.mkdir();
+         if(!savedWorlds.exists()) {
+         savedWorlds.mkdir();
+         }
+         savedWorlds.mkdir();
     }
 
     private void setupFiles2() {
@@ -309,12 +309,12 @@ public class Engine implements Serializable {
 
     private void resumePrevWorld(boolean keyBoardStart) {
         teRender.initialize(WIDTH, HEIGHT);
-        // File prevGenerator = new File(savedWorlds, "prevWorld.txt");
-        // if (!prevGenerator.exists()) {
-        // createNewWorld("0", "", keyBoardStart);
-        // return;
-        // }
-        this.currGenerator = persistenceUtils.readObject(savedWorlds, RoomGenerator.class);
+         File prevGenerator = new File(savedWorlds, "prevWorld.txt");
+         if (!prevGenerator.exists()) {
+         createNewWorld("0", "", keyBoardStart);
+         return;
+         }
+        this.currGenerator = persistenceUtils.readObject(prevGenerator, RoomGenerator.class);
         this.backWorld = currGenerator.world;
         this.currGenerator.drawRooms(); // call generateRooms() and connect() first;
         if (keyBoardStart) {
