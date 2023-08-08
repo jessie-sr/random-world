@@ -154,6 +154,9 @@ public class Engine implements Serializable {
             } else {
                 currKey = StdDraw.nextKeyTyped();
             }
+            String currKeyString = String.valueOf(currKey);
+            currKeyString = currKeyString.toLowerCase(Locale.ROOT);
+            currKey = currKeyString.charAt(0);
             switch (currKey) {
                 case 'w' -> {
                     if (currGenerator.board[currGenerator.playerX][currGenerator.playerY + 1] != 2) {
