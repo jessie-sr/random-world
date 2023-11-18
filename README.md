@@ -2,7 +2,7 @@
 
 ## Overview
 
-Welcome to the Random World Project, a 2D tile-based world exploration engine. This project represents a comprehensive software engineering effort involving ideation, design, implementation, and presentation. It emphasizes the development of a pseudorandomly generated world with distinct rooms and hallways, interactive features, and persistent game states.
+This project is dedicated to build a 2D tile-based world exploration engine, representing a comprehensive software engineering effort that involves ideation, design, implementation, and presentation. It emphasizes the development of a pseudorandomly generated world with distinct rooms and hallways, interactive features, and persistent game states.
 
 ### Key Features
 
